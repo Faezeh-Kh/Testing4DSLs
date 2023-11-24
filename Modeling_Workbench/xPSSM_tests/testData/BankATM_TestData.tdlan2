@@ -39,7 +39,7 @@ Package BankATM_TestData {
 	IntegerAttributeValue cardPinValue ( attribute = cardPin ) ;
 	IntegerAttribute cardBalance ( _name = "cardBalance" ) ;
 	IntegerAttributeValue cardBalanceValue ( attribute = cardBalance ) ;
-	Signal Card ( _name = "Card" , attributes = { cardPin , cardBalance } ) ;
+	Signal Card ( _name = "Card" , attributes = {cardPin, cardBalance} ) ;
 	SignalEventOccurrence Card_occurrence ( signal = Card ) ;
 	IntegerAttribute pin ( _name = "pin" ) ;
 	IntegerAttributeValue pinValue ( attribute = pin ) ;
