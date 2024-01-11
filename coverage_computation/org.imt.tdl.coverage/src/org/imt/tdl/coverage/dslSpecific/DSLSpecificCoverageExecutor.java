@@ -347,7 +347,7 @@ public class DSLSpecificCoverageExecutor {
 				if (container2add != null) {
 					//if the container must be added, add it before all of its contained elements
 					int index = objectsCapturedByTrace_modified.size()-1;
-					while (objectsCapturedByTrace_modified.get(index).eContainer() == container2add && index >= 0) {
+					while (index >= 0 && objectsCapturedByTrace_modified.get(index).eContainer() == container2add) {
 						index--;
 					}
 					objectsCapturedByTrace_modified.add(index+1, container2add);
