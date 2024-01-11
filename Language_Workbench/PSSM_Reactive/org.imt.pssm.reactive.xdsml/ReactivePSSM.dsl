@@ -5,3 +5,4 @@ behavioralInterface = platform:/resource/org.imt.pssm.reactive.relationships/Rea
 implemRelId = org.imt.pssm.reactive.relationships.implementation_relationship
 subtypeRelId = org.imt.pssm.reactive.relationships.subtyping_relationship
 coverageRules = /org.imt.pssm.reactive.coverage/PSSMModelElementCoverageRules.cov, /org.imt.pssm.reactive.coverage/PSSMBranchCoverageRules.cov
+amplifierConfig = /org.imt.pssm.reactive.amplifier/PSSMAmplifier.ampc
