@@ -69,5 +69,4 @@ public class COVScopeProvider extends AbstractCOVScopeProvider {
 		}
 		return super.getScope(context, reference);
 	}
-	
 }

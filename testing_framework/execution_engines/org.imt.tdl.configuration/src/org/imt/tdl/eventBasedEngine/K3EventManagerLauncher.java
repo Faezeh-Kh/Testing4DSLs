@@ -104,8 +104,8 @@ public class K3EventManagerLauncher implements IEventBasedExecutionEngine{
 	
 	@Override
 	public void setUp(String MUTPath, String DSLPath){
-		this.MUTPath = MUTPath;
-		this.DSLPath = DSLPath;
+		this.MUTPath = MUTPath.replaceAll("\\\\", "/");
+		this.DSLPath = DSLPath.replaceAll("\\\\", "/");
 		dslProcessor = new DSLProcessor(Paths.get(DSLPath));
 		final String languageName = dslProcessor.getDSLName();
 		final String implemRelId = dslProcessor.getImplemRelId();

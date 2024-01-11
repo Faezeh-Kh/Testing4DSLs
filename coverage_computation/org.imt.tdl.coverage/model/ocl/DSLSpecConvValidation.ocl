@@ -1,4 +1,4 @@
-import 'platform:/plugin/coverage.computation/model/DSLSpecificCoverage.ecore'
+import 'platform:/plugin/org.imt.tdl.coverage/model/DSLSpecificCoverage.ecore'
 
 
 package DSLSpecificCoverage
