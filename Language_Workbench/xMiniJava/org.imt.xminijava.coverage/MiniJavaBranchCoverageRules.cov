@@ -1,6 +1,6 @@
 ruleset MiniJavaBranchCoverage{
 	import metamodel xminiJava
-	import ruleset from "/minijava.coverage/MiniJavaModelElementCoverageRules.cov"
+	import ruleset from "/org.imt.xminijava.coverage/MiniJavaModelElementCoverageRules.cov"
 	
 	context Block{
 		covered when ONE statements iscovered

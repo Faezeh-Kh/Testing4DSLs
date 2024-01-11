@@ -1,6 +1,6 @@
 ruleset PSSMBranchCoverage{
 	import metamodel statemachines
-	import ruleset from "/pssm.coverage/PSSMModelElementCoverageRules.cov"
+	import ruleset from "/org.imt.pssm.reactive.coverage/PSSMModelElementCoverageRules.cov"
 	context State{
 		when "self.outgoingTransitions->size()>1 and self.outgoingTransitions->forAll(x1:Transition,x2:Transition|x1<>x2 implies x1.triggers<>x2.triggers or x1.constraint<>x2.constraint)"
 		{
