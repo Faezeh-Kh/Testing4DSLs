@@ -7,9 +7,9 @@ import org.eclipse.emf.common.util.URI;
 
 import org.eclipse.ocl.xtext.completeocl.validation.CompleteOCLEObjectValidator;
 import org.eclipse.xtext.validation.EValidatorRegistrar;
+import org.imt.tdl.coverage.Activator;
 
 import DSLSpecificCoverage.DSLSpecificCoveragePackage;
-import org.imt.tdl.coverage.computation.Activator;
 
 /**
  * This class contains custom validation rules. 

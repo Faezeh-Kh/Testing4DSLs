@@ -22,6 +22,7 @@ Export-Package: DSLSpecificCoverage,
  TestCoverage,
  TestCoverage.impl,
  TestCoverage.util,
+ org.imt.tdl.coverage,
  org.imt.tdl.coverage.computation,
  org.imt.tdl.coverage.dslSpecific,
  org.imt.tdl.coverage.report

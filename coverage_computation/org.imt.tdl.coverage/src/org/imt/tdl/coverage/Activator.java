@@ -1,4 +1,4 @@
-package org.imt.tdl.coverage.computation;
+package org.imt.tdl.coverage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
