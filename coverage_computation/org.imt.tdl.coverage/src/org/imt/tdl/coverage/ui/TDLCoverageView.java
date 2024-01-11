@@ -18,6 +18,8 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -84,28 +86,19 @@ public class TDLCoverageView extends ViewPart{
 			TDLCoverageUtil.getInstance().runCoverageComputation();
 		}
 		Composite contents = new Group(parent, SWT.NULL);
-	    GridLayout layout = new GridLayout();
-	    layout.numColumns = 2;
-		contents.setLayout(layout);
-	    GridData gd = new GridData();
-	    contents.setLayoutData(gd);
+		contents.setLayout(GridLayoutFactory.swtDefaults().numColumns(2).create());
+	    contents.setLayoutData(GridDataFactory.swtDefaults().create());
 	    
 	    Group filter = new Group(contents, SWT.NULL);
-	    layout = new GridLayout();
-	    filter.setLayout(layout);
-		filter.setText("Filters");
-		gd = new GridData();
-		gd.verticalAlignment = SWT.FILL;
-		filter.setLayoutData(gd);
+	    filter.setText("Filters");
+	    filter.setLayout(GridLayoutFactory.swtDefaults().create());
+	    filter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
 		
 		Group coverageTypeFilter = new Group(filter, SWT.NULL);
-	    layout = new GridLayout();
-	    coverageTypeFilter.setLayout(layout);
 	    coverageTypeFilter.setText("Coverage Metrics Filters");
-		gd = new GridData();
-		gd.verticalAlignment = SWT.ON_TOP;
-		gd.widthHint = 500;
-		coverageTypeFilter.setLayoutData(gd);
+	    coverageTypeFilter.setLayout(GridLayoutFactory.swtDefaults().create());
+	    coverageTypeFilter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
+		
 		final Combo coverageTypeFilterCombo = new Combo(coverageTypeFilter, SWT.NONE);
 		TDLCoverageUtil.getInstance().getTestSuiteCoverage().getCoverageReports()
 			.forEach(r -> coverageTypeFilterCombo.add(r.getReportTitle()));
@@ -120,13 +113,10 @@ public class TDLCoverageView extends ViewPart{
 		});
         
 		Group coverageStatusFilter = new Group(filter, SWT.NULL);
-	    layout = new GridLayout();
-	    coverageStatusFilter.setLayout(layout);
 	    coverageStatusFilter.setText("Coverage Status Filters");
-		gd = new GridData();
-		gd.verticalAlignment = SWT.ON_TOP;
-		gd.widthHint = 500;
-		coverageStatusFilter.setLayoutData(gd);
+	    coverageStatusFilter.setLayout(GridLayoutFactory.swtDefaults().create());
+	    coverageStatusFilter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
+		
         final Combo coverageStatusFilterCombo = new Combo(coverageStatusFilter, SWT.NONE);
         coverageStatusFilterCombo.add("All");
         coverageStatusFilterCombo.add("Covered");
@@ -145,13 +135,10 @@ public class TDLCoverageView extends ViewPart{
 		});
 		
         Group elementFilter = new Group(filter, SWT.NULL);
-	    layout = new GridLayout();
-	    elementFilter.setLayout(layout);
 	    elementFilter.setText("Type of Model Element");
-		gd = new GridData();
-		gd.verticalAlignment = SWT.ON_TOP;
-		gd.widthHint = 500;
-		elementFilter.setLayoutData(gd);
+	    elementFilter.setLayout(GridLayoutFactory.swtDefaults().create());
+	    elementFilter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
+		
         final Combo elementFilterCombo = new Combo(elementFilter, SWT.NONE);
         elementFilterCombo.add("All");
         //add the meta-classes included in the coverage information as filter
@@ -180,7 +167,7 @@ public class TDLCoverageView extends ViewPart{
 		FillLayout fill = new FillLayout(SWT.VERTICAL);
 		testCoverage.setLayout(fill);
 		testCoverage.setText("Coverage status");
-		gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		gd.horizontalAlignment = SWT.FILL;
 		gd.verticalAlignment = SWT.FILL;
 		testCoverage.setLayoutData(gd);

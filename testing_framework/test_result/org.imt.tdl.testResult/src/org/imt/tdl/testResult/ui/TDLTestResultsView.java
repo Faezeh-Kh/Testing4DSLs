@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.presentation.EcoreEditor;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -25,7 +27,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -66,20 +67,13 @@ public class TDLTestResultsView extends ViewPart{
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite contents = new Group(parent, SWT.NULL);
-	    GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		contents.setLayout(layout);
-	    GridData gd = new GridData();
-	    contents.setLayoutData(gd);
+		contents.setLayout(GridLayoutFactory.swtDefaults().numColumns(2).create());
+	    contents.setLayoutData(GridDataFactory.swtDefaults().create());
 	    
 	    Group filter = new Group(contents, SWT.NULL);
-	    layout = new GridLayout();
-		filter.setLayout(layout);
 	    filter.setText("Filters");
-	    gd = new GridData();
-		gd.verticalAlignment = SWT.ON_TOP;
-		gd.widthHint = 150;
-	    filter.setLayoutData(gd);
+	    filter.setLayout(GridLayoutFactory.swtDefaults().create());
+	    filter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
 	    
         final Combo filterCombo = new Combo(filter, SWT.NONE);
         filterCombo.add("All");
@@ -99,7 +93,7 @@ public class TDLTestResultsView extends ViewPart{
 		FillLayout fill = new FillLayout(SWT.VERTICAL);
 		testVerdict.setLayout(fill);
 		testVerdict.setText("Test Execution Results");
-		gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		gd.horizontalAlignment = SWT.FILL;
 		gd.verticalAlignment = SWT.FILL;
 		testVerdict.setLayoutData(gd);
