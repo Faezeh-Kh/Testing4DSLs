@@ -12,15 +12,12 @@ package org.etsi.mts.tdl.graphical.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.gemoc.executionframework.extensions.sirius.services.AbstractGemocAnimatorServices;
 import org.etsi.mts.tdl.Message;
-import org.imt.k3tdl.k3dsa.MessageAspectMessageAspectContext;
-import org.imt.tdl.testResult.TDLMessageResult;
+import org.imt.k3tdl.interpreter.MessageAspectMessageAspectContext;
+import org.imt.tdl.testResult.TDLTestResultUtil;
 
 public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 	@Override
@@ -32,8 +29,8 @@ public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 	public boolean isPassedMessage(EObject o){    
 		if(o.eContainer() instanceof Message){
 			Message message = (Message) o.eContainer();
-			String messageResult = MessageAspectMessageAspectContext.INSTANCE.getSelf(message).messageVerdict.getValue();
-			if (messageResult == "PASS") {
+			String messageResult = MessageAspectMessageAspectContext.getSelf(message).messageVerdict.getValue();
+			if (messageResult == TDLTestResultUtil.PASS) {
 				return true;
 			}else {
 				return false;
@@ -45,8 +42,8 @@ public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 	public boolean isFailedMessage(EObject o){     
 		if(o.eContainer() instanceof Message){
 			Message message = (Message) o.eContainer();
-			String messageResult = MessageAspectMessageAspectContext.INSTANCE.getSelf(message).messageVerdict.getValue();
-			if (messageResult == "FAIL") {
+			String messageResult = MessageAspectMessageAspectContext.getSelf(message).messageVerdict.getValue();
+			if (messageResult == TDLTestResultUtil.FAIL) {
 				return true;
 			}else {
 				return false;

@@ -867,23 +867,17 @@
         </toolSections>
         <customization>
           <vsmElementCustomizations xsi:type="description:VSMElementCustomization" predicateExpression="service:self.isCurrentInstruction()">
-            <featureCustomizations xsi:type="description:EReferenceCustomization" appliedOn="//@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.0/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.2/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.1/@style" referenceName="strokeColor">
-              <value href="environment:/viewpoint#//@systemColors/@entries[name='blue']"/>
-            </featureCustomizations>
+            <featureCustomizations xsi:type="description:EReferenceCustomization" referenceName="strokeColor"/>
           </vsmElementCustomizations>
         </customization>
       </additionalLayers>
       <additionalLayers name="Animation">
         <customization>
           <vsmElementCustomizations xsi:type="description:VSMElementCustomization" predicateExpression="service:self.isPassedMessage()">
-            <featureCustomizations xsi:type="description:EReferenceCustomization" appliedOn="//@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.0/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.2/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.1/@style" referenceName="strokeColor">
-              <value href="environment:/viewpoint#//@systemColors/@entries[name='green']"/>
-            </featureCustomizations>
+            <featureCustomizations xsi:type="description:EReferenceCustomization" referenceName="strokeColor"/>
           </vsmElementCustomizations>
           <vsmElementCustomizations xsi:type="description:VSMElementCustomization" predicateExpression="service:self.isFailedMessage()">
-            <featureCustomizations xsi:type="description:EReferenceCustomization" appliedOn="//@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.0/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.2/@style //@ownedViewpoints[name='org.etsi.mts.tdl']/@ownedRepresentations[name='TestDescriptionDiagram']/@defaultLayer/@edgeMappings[name='interaction']/@conditionnalStyles.1/@style" referenceName="strokeColor">
-              <value href="environment:/viewpoint#//@systemColors/@entries[name='red']"/>
-            </featureCustomizations>
+            <featureCustomizations xsi:type="description:EReferenceCustomization" referenceName="strokeColor"/>
           </vsmElementCustomizations>
         </customization>
       </additionalLayers>

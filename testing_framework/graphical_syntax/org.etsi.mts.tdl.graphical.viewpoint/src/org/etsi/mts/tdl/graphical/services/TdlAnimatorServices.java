@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gemoc.executionframework.extensions.sirius.services.AbstractGemocAnimatorServices;
 import org.etsi.mts.tdl.Message;
 import org.imt.k3tdl.interpreter.MessageAspectMessageAspectContext;
+import org.imt.tdl.testResult.TDLTestResultUtil;
 
 public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 	@Override
@@ -29,7 +30,7 @@ public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 		if(o.eContainer() instanceof Message){
 			Message message = (Message) o.eContainer();
 			String messageResult = MessageAspectMessageAspectContext.getSelf(message).messageVerdict.getValue();
-			if (messageResult == "PASS") {
+			if (messageResult == TDLTestResultUtil.PASS) {
 				return true;
 			}else {
 				return false;
@@ -42,7 +43,7 @@ public class TdlAnimatorServices extends AbstractGemocAnimatorServices {
 		if(o.eContainer() instanceof Message){
 			Message message = (Message) o.eContainer();
 			String messageResult = MessageAspectMessageAspectContext.getSelf(message).messageVerdict.getValue();
-			if (messageResult == "FAIL") {
+			if (messageResult == TDLTestResultUtil.FAIL) {
 				return true;
 			}else {
 				return false;
