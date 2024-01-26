@@ -6,3 +6,5 @@ metadata
 edit
 editor
 tests
+test-bin
+*.class
