@@ -5,40 +5,72 @@ module ecore2tdl;
 create OUT : TDL from IN : Ecore;
 
 helper def: tokenNames: Sequence(String) = Sequence {
-	'Package', '{', '}', 'with', 'perform', 'action', '(', ',', ')', 'on', 'test', 'objectives'
-	, ':', ';', 'name', 'time', 'label', 'Constraint', 'constraints', 'Action', 'alternatively'
-	, 'or', 'Annotation', '*', '?', '=', 'assert', 'otherwise', 'set', 'verdict', 'to', '->', '['
-	, ']', 'times', 'repeat', 'break', 'Note', 'create', 'of', 'type', 'bind', 'Component', 'Type'
-	, 'having', 'if', 'else', 'connect', 'as', 'Map', 'in', '.', 'new', 'containing', 'Use'
-	, 'Signature', 'Collection', 'default', '+', '-', '/', 'mod', '>', '<', '>=', '<=', '==', '!='
-	, 'and', 'xor', 'not', 'size', 'Import', 'all', 'from', 'Function', 'returns', 'instance'
-	, 'returned', 'Predefined', 'gate', 'Gate', 'accepts', 'sends', 'triggers', 'calls', 'responds'
-	, 'response', 'interrupt', 'optional', 'mapped', 'omit', 'argument', 'optionally', 'run'
-	, 'parallel', 'parameter', 'every', 'component', 'is', 'quiet', 'for', 'terminate', 'where'
-	, 'it', 'assigned', 'Test', 'Configuration', 'Description', 'Implementation', 'uses'
-	, 'configuration', 'execute', 'bindings', 'Objective', 'description', 'Time', 'out', 'timer'
-	, 'start', 'stop', 'variable', 'waits', 'extends', 'SUT', 'Tester', 'Message', 'Procedure'
-	, 'In', 'Out', 'Exception', 'last', 'previous', 'first'
+	'exception' , 'Entity' , 'Configuration' , 'PICS' , 'constraints' , 'bind' 
+	, 'containing' , '(' , ')' , 'optional' , '*' , 'then' , '+' , 'triggers' 
+	, ',' , 'an' , 'execute' , '-' , '.' , '/' , 'as' , 'SUT' , 'at' , 'size' 
+	, 'stop' , 'Note' , 'returns' , 'assigned' , ':' , 'receives' , ';' , '<' 
+	, '!=' , 'conditions' , '=' , '>' , '?' , '@' , 'into' , 'default' , 'by' 
+	, 'xor' , 'where' , 'quiet' , 'after' , 'attribute' , '[' , ']' , 'connect' 
+	, 'a' , 'alternatively' , 'set' , 'replaced' , 'the' , 'component' , 'calls' 
+	, 'associated' , 'Event' , 'to' , '{' , 'returned' , 'Initial' , '}' 
+	, 'Constraint' , 'bindings' , 'run' , 'predefined' , 'Name' , 'Test' 
+	, 'Procedure' , 'Expected' , 'ensure' , 'last' , 'test' , 'extends' , 'name' 
+	, 'carrying' , 'some' , 'Action' , 'hidden' , 'for' , 'description' , 'Time' 
+	, 'Gate' , 'timeout' , 'not' , 'now' , 'Component' , 'every' , 'derived' 
+	, 'previous' , 'start' , 'perform' , 'false' , 'multiple' , 'merged' , 'Purpose' 
+	, 'label' , 'with' , 'gate' , 'time' , 'Import' , 'mod' , 'optionally' , 'during' 
+	, 'type' , 'occurs' , 'when' , 'else' , 'action' , 'if' , 'having' , 'waits' 
+	, 'in' , 'is' , 'it' , 'Out' , 'Variant' , 'verdict' , 'Package' , 'terminate' 
+	, 'Map' , 'wait' , 'Description' , 'In' , 'Implementation' , 'out' , 'Enumerated' 
+	, 'indicating' , 'assert' , 'Structure' , 'event' , 'Final' , 'break' , 'within' 
+	, 'Use' , 'Reference' , 'trigger' , 'Annotation' , 'sends' , 'Type' , 'behaviour' 
+	, 'Predefined' , 'first' , 'entity' , '<=' , 'argument' , 'instance' , 'before' 
+	, 'several' , 'while' , 'Template' , 'that' , 'TestDescription' , 'interrupt' 
+	, 'only' , 'few' , 'create' , 'from' , 'all' , '==' , 'otherwise' , 'new' , 'accepts' 
+	, 'Objective' , '->' , 'true' , 'mapped' , 'Collection' , 'omit' , '>=' , 'no' 
+	, 'Tester' , 'Message' , 'configuration' , 'responds' , 'point' , 'Function' , 'timer' 
+	, 'times' , 'parallel' , 'and' , 'of' , 'parameter' , 'repeat' , 'value' , 'on' , 'or' 
+	, 'any' , 'Exception' , 'contained' , 'corresponding' , 'References' , 'response' 
+	, 'Signature' , 'variable' , 'uses' , 'objectives'
 }; 
 helper def: enums: Set (Ecore!EEnum)= Ecore!EEnum->allInstances()->asSet();
 helper def: enumLiterals: Set (Ecore!EEnumLiteral) = thisModule.enums->collect(e | e.eLiterals);
 helper context Ecore!EPackage def: basicDataTypes: Set(Ecore!EDataType) = Ecore!EDataType->allInstances()->
 	select(type | not type.oclIsKindOf(Ecore!EEnum))->asSet();
 
+
 helper def: dynamicAnnotationType: TDL!AnnotationType = OclUndefined;
+
 helper context Ecore!EStructuralFeature def: isDynamicFeature: Boolean = 
 	if (self.eAnnotations->select(a | a.source = 'dynamic' or a.source = 'aspect')->notEmpty()) then true else false endif;
+
 helper context Ecore!EClass def: isDynamicClass: Boolean = 
 	if (self.eAnnotations->select(a | a.source = 'dynamic' or a.source = 'aspect')->notEmpty()) then true else false endif;
+
+helper context Ecore!EClass def: getDynamicAnnotationType: TDL!AnnotationType =
+	if (thisModule.dynamicAnnotationType.oclIsUndefined())
+				   then thisModule.eAnnotation2annotationType()
+				   else thisModule.dynamicAnnotationType
+				   endif;
+
 helper def: abstractAnnotationType: TDL!AnnotationType = OclUndefined;
+
+helper context Ecore!EClass def: getAbstractAnnotationType: TDL!AnnotationType =
+	if (thisModule.abstractAnnotationType.oclIsUndefined())
+				   then thisModule.abstract2annotationType()
+				   else thisModule.abstractAnnotationType
+				   endif;
+	
+helper context Ecore!ENamedElement def: getValidName: String=
+	if (thisModule.tokenNames.includes(self.name))
+				then '_' + self.name
+				else self.name
+				endif;
 
 rule simpleConcreteStaticClass2Type{
 	from class: Ecore!EClass (class.eAllStructuralFeatures.isEmpty() and not class.abstract and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif)
+		name <- class.getValidName)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
 	}
@@ -46,16 +78,10 @@ rule simpleConcreteStaticClass2Type{
 rule simpleConcreteDynamicClass2Type{
 	from class: Ecore!EClass (class.eAllStructuralFeatures.isEmpty() and not class.abstract and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		annotation <- dynamicAnnotation),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -64,16 +90,10 @@ rule simpleConcreteDynamicClass2Type{
 rule simpleAbstractStaticClass2Type{
 	from class: Ecore!EClass (class.eAllStructuralFeatures.isEmpty() and class.abstract and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		annotation <- abstractAnnotation),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -82,21 +102,12 @@ rule simpleAbstractStaticClass2Type{
 rule simpleAbstractDynamicClass2Type{
 	from class: Ecore!EClass (class.eAllStructuralFeatures.isEmpty() and class.abstract and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif),
+		name <- class.getValidName),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -108,10 +119,7 @@ rule featuredConcreteStaticClass2Type{
 								and not class.abstract
 								and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -127,10 +135,7 @@ rule featuredConcreteDynamicClass2Type{
 								and not class.abstract
 								and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -138,10 +143,7 @@ rule featuredConcreteDynamicClass2Type{
 					endif),
 		annotation <- dynamicAnnotation),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -153,10 +155,7 @@ rule featuredAbstractStaticClass2Type{
 								and class.abstract
 								and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -164,10 +163,7 @@ rule featuredAbstractStaticClass2Type{
 					endif),
 		annotation <- abstractAnnotation),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -180,26 +176,17 @@ rule featuredAbstractDynamicClass2Type{
 								and class.abstract
 								and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
 					else thisModule.staticFeature2member(feature)
 					endif)),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -212,10 +199,7 @@ rule concreteInheritedStaticClass2Type{
 								and not class.abstract
 								and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -233,10 +217,7 @@ rule concreteInheritedDynamicClass2Type{
 								and not class.abstract
 								and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -245,10 +226,7 @@ rule concreteInheritedDynamicClass2Type{
 		extension <- class.eSuperTypes -> collect (st | thisModule.superClass2extension(st)),
 		annotation <- dynamicAnnotation),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -261,10 +239,7 @@ rule abstractInheritedStaticClass2Type{
 								and class.abstract
 								and not class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <- class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -273,10 +248,7 @@ rule abstractInheritedStaticClass2Type{
 		extension <- class.eSuperTypes -> collect (st | thisModule.superClass2extension(st)),
 		annotation <- abstractAnnotation),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -289,10 +261,7 @@ rule abstractInheritedDynamicClass2Type{
 								and class.abstract
 								and class.isDynamicClass)
 	to type: TDL!StructuredDataType(
-		name <- if (thisModule.tokenNames.includes(class.name))
-				then '_' + class.name
-				else class.name
-				endif,
+		name <-class.getValidName,
 		member <- class.eStructuralFeatures-> collect(feature | 
 				if (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 					then thisModule.dynamicFeature2annotatedMember(feature)
@@ -300,16 +269,10 @@ rule abstractInheritedDynamicClass2Type{
 					endif),
 		extension <- class.eSuperTypes -> collect (st | thisModule.superClass2extension(st))),
 		abstractAnnotation: TDL!Annotation(
-			key <- if (thisModule.abstractAnnotationType.oclIsUndefined())
-				   then thisModule.abstract2annotationType()
-				   else thisModule.abstractAnnotationType
-				   endif,
+			key <- class.getAbstractAnnotationType,
 			annotatedElement <- type),
 		dynamicAnnotation: TDL!Annotation(
-			key <- if (thisModule.dynamicAnnotationType.oclIsUndefined())
-				   then thisModule.eAnnotation2annotationType()
-				   else thisModule.dynamicAnnotationType
-				   endif,
+			key <- class.getDynamicAnnotationType,
 			annotatedElement <- type)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
@@ -327,10 +290,7 @@ lazy rule staticFeature2member{
 	from feature: Ecore!EStructuralFeature (feature.eAnnotations.isEmpty() or 
 			(feature.eAnnotations.notEmpty() and (not feature.isDynamicFeature)))
 	to member: TDL!Member(
-		name <- if (thisModule.tokenNames.includes(feature.name))
-				then '_' + feature.name
-				else feature.name
-				endif,
+		name <- feature.getValidName,
 		dataType <- if (feature.oclIsKindOf(Ecore!EAttribute) and thisModule.enums->excludes(feature.eType))
 					then  thisModule.dataType2simpleType(feature.eType)
 					else feature.eType
@@ -339,10 +299,7 @@ lazy rule staticFeature2member{
 lazy rule dynamicFeature2annotatedMember{
 	from feature: Ecore!EStructuralFeature (feature.eAnnotations.notEmpty() and feature.isDynamicFeature)
 	to member: TDL!Member(
-		name <- if (thisModule.tokenNames.includes(feature.name))
-				then '_' + feature.name
-				else feature.name
-				endif,
+		name <- feature.getValidName,
 		dataType <- if (feature.oclIsKindOf(Ecore!EAttribute) and thisModule.enums->excludes(feature.eType))
 					then  thisModule.dataType2simpleType(feature.eType)
 					else feature.eType
@@ -374,10 +331,7 @@ unique lazy rule abstract2annotationType{
 rule enum2simpleType{
 	from enum: Ecore!EEnum
 	to type : TDL!SimpleDataType(
-		name <- if (thisModule.tokenNames.includes(enum.name))
-				then '_' + enum.name
-				else enum.name
-				endif) 
+		name <- enum.getValidName) 
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
 	}
@@ -385,10 +339,7 @@ rule enum2simpleType{
 rule enumLiteral2simpleDataInstance{
 	from enumLiteral: Ecore!EEnumLiteral
 	to dataInstance: TDL!SimpleDataInstance(
-		name <- if (thisModule.tokenNames.includes(enumLiteral.name))
-				then '_' + enumLiteral.name
-				else enumLiteral.name
-				endif,
+		name <- enumLiteral.getValidName,
 		dataType <- enumLiteral.eEnum)
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(dataInstance.name.toString());
@@ -397,10 +348,7 @@ rule enumLiteral2simpleDataInstance{
 unique lazy rule dataType2simpleType{
 	from dataType: Ecore!EDataType
 	to type : TDL!SimpleDataType(
-		name <- if (thisModule.tokenNames.includes(dataType.name))
-				then '_' + dataType.name
-				else dataType.name
-				endif)
+		name <- dataType.getValidName )
 	do{
 		thisModule.tokenNames <- thisModule.tokenNames.append(type.name.toString());
 	}

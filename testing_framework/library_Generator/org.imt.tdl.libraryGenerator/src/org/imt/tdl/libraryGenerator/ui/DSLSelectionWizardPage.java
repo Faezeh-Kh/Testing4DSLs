@@ -22,17 +22,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
-public class DSLSelectionWizardPage extends WizardPage{
-	
-	private Composite parent;
+public class DSLSelectionWizardPage extends WizardPage {
+
 	private Group tdlProjectArea;
 	private Group languageArea;
-	
+
 	private org.eclipse.swt.widgets.Combo _projectCombo;
 	private org.eclipse.swt.widgets.Combo _languageCombo;
 	private IPath selectedProjectPath;
 	private String selectedDSLPath;
-	
+
 	protected DSLSelectionWizardPage(String pageName) {
 		super(pageName);
 		super.setTitle("Generate TDL code from DSL definition");
@@ -40,7 +39,6 @@ public class DSLSelectionWizardPage extends WizardPage{
 
 	@Override
 	public void createControl(Composite parent) {
-		this.parent = parent;
 		Composite area = new Composite(parent, SWT.NULL);
 		GridLayout gl = new GridLayout(1, false);
 		gl.marginHeight = 0;
@@ -49,10 +47,10 @@ public class DSLSelectionWizardPage extends WizardPage{
 		setControl(area);
 		tdlProjectArea = createGroup(area, "Select a TDL Project");
 		languageArea = createGroup(area, "Select a language");
-		createProjectLayout (tdlProjectArea, null);
-		createLanguageLayout (languageArea, null);
+		createProjectLayout(tdlProjectArea, null);
+		createLanguageLayout(languageArea, null);
 	}
-	
+
 	protected Group createGroup(Composite parent, String text) {
 		Group group = new Group(parent, SWT.NULL);
 		group.setText(text);
@@ -63,7 +61,7 @@ public class DSLSelectionWizardPage extends WizardPage{
 		group.setLayout(locationLayout);
 		return group;
 	}
-	
+
 	public Composite createProjectLayout(Composite parent, Font font) {
 		createTextLabelLayout(parent, "TDL Projects");
 		_projectCombo = new Combo(parent, SWT.NONE);
@@ -76,18 +74,19 @@ public class DSLSelectionWizardPage extends WizardPage{
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				selectedProjectPath = getAllTDLProjects().get(_projectCombo.getText());
+				setPageComplete(isPageComplete());
 			}
-		});	
+		});
 		createTextLabelLayout(parent, "");
 		return parent;
 	}
-	
+
 	public Composite createLanguageLayout(Composite parent, Font font) {
 		// Language
 		createTextLabelLayout(parent, "Languages");
 		_languageCombo = new Combo(parent, SWT.NONE);
 		_languageCombo.setLayoutData(createStandardLayout());
-		
+
 		final HashMap<String, String> languagesPaths = getAllLanguages();
 		Set<String> languagesNames = (Set<String>) languagesPaths.keySet();
 		String[] empty = {};
@@ -98,6 +97,7 @@ public class DSLSelectionWizardPage extends WizardPage{
 				selectedDSLPath = languagesPaths.get(_languageCombo.getText());
 				if (!selectedDSLPath.contains("platform:/plugin")) {
 					selectedDSLPath = "platform:/plugin" + languagesPaths.get(_languageCombo.getText());
+					setPageComplete(isPageComplete());
 				}
 			}
 		});
@@ -105,24 +105,23 @@ public class DSLSelectionWizardPage extends WizardPage{
 
 		return parent;
 	}
-	
+
 	protected void createTextLabelLayout(Composite parent, String labelString) {
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		parent.setLayoutData(gd);
 		Label inputLabel = new Label(parent, SWT.NONE);
 		inputLabel.setText(labelString); // $NON-NLS-1$
 	}
-	
+
 	private GridData createStandardLayout() {
 		return new GridData(SWT.FILL, SWT.CENTER, true, false);
 	}
-	
+
 	public HashMap<String, String> getAllLanguages() {
 		HashMap<String, String> languagesPaths = new HashMap<String, String>();
 
-		IConfigurationElement[] languages = Platform
-				.getExtensionRegistry().getConfigurationElementsFor(
-						LanguageDefinitionExtensionPoint.GEMOC_LANGUAGE_EXTENSION_POINT);
+		IConfigurationElement[] languages = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor(LanguageDefinitionExtensionPoint.GEMOC_LANGUAGE_EXTENSION_POINT);
 		for (IConfigurationElement lang : languages) {
 			String xdsmlPath = lang.getAttribute("xdsmlFilePath");
 			String xdsmlName = lang.getAttribute("name");
@@ -132,23 +131,29 @@ public class DSLSelectionWizardPage extends WizardPage{
 		}
 		return languagesPaths;
 	}
-	
+
 	public HashMap<String, IPath> getAllTDLProjects() {
 		HashMap<String, IPath> projects = new HashMap<>();
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject[] tdlProjects = root.getProjects();
-		for (int i=0; i<tdlProjects.length; i++) {
+		for (int i = 0; i < tdlProjects.length; i++) {
 			if (tdlProjects[i].isAccessible()) {
 				projects.put(tdlProjects[i].getName(), tdlProjects[i].getFullPath());
 			}
 		}
 		return projects;
 	}
-	
+
+	@Override
+	public boolean isPageComplete() {
+		return selectedProjectPath != null && !selectedProjectPath.isEmpty() && selectedDSLPath != null
+				&& !selectedDSLPath.isEmpty();
+	}
+
 	public IPath getSelectedProjectPath() {
 		return selectedProjectPath;
 	}
-	
+
 	public String getSelectedDSLFilePath() {
 		return selectedDSLPath;
 	}

@@ -29,28 +29,31 @@ import org.eclipse.gemoc.xdsmlframework.api.core.ExecutionMode;
 import org.eclipse.gemoc.xdsmlframework.api.core.IExecutionEngine;
 import org.eclipse.gemoc.xdsmlframework.api.engine_addon.IEngineAddon;
 
-public class CustomALELauncher extends AbstractSequentialGemocLauncher<GenericModelExecutionContext<SequentialRunConfiguration>, SequentialRunConfiguration> {
+public class CustomALELauncher extends
+		AbstractSequentialGemocLauncher<GenericModelExecutionContext<SequentialRunConfiguration>, SequentialRunConfiguration> {
 
 	public final static String TYPE_ID = Activator.PLUGIN_ID + ".launcher";
-	
+
 	public GenericModelExecutionContext<SequentialRunConfiguration> executioncontext;
 
 	@Override
-	public IExecutionEngine<GenericModelExecutionContext<SequentialRunConfiguration>> createExecutionEngine(SequentialRunConfiguration runConfiguration, ExecutionMode executionMode)
+	public IExecutionEngine<GenericModelExecutionContext<SequentialRunConfiguration>> createExecutionEngine(
+			SequentialRunConfiguration runConfiguration, ExecutionMode executionMode)
 			throws CoreException, EngineContextException {
 		AleEngine engine = new AleEngine();
 		engine.initialize(executioncontext);
-		
+
 		// declare this engine as available for ale: queries in the odesign
 		ALESiriusInterpreter.getDefault().addAleEngine(engine);
 		// create and add addon to unregister when the engine will be disposed
 		IEngineAddon aleRTDInterpreter = new ALESiriusInterpreterProviderAddon();
-		Activator.getDefault().getMessaggingSystem().debug("Enabled implicit addon: "+ aleRTDInterpreter.getAddonID(), Activator.PLUGIN_ID);
+		Activator.getDefault().getMessaggingSystem().debug("Enabled implicit addon: " + aleRTDInterpreter.getAddonID(),
+				Activator.PLUGIN_ID);
 		engine.getExecutionContext().getExecutionPlatform().addEngineAddon(aleRTDInterpreter);
 
 		return engine;
 	}
-	
+
 	@Override
 	protected String getLaunchConfigurationTypeID() {
 		return TYPE_ID;
@@ -77,7 +80,8 @@ public class CustomALELauncher extends AbstractSequentialGemocLauncher<GenericMo
 	}
 
 	@Override
-	protected SequentialRunConfiguration parseLaunchConfiguration(ILaunchConfiguration configuration) throws CoreException {
+	protected SequentialRunConfiguration parseLaunchConfiguration(ILaunchConfiguration configuration)
+			throws CoreException {
 		return new SequentialRunConfiguration(configuration);
 	}
 

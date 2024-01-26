@@ -43,43 +43,41 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.imt.tdl.testResult.TDLMessageResult;
 import org.imt.tdl.testResult.TDLTestCaseResult;
 import org.imt.tdl.testResult.TDLTestResultUtil;
 import org.imt.tdl.testResult.TDLTestSuiteResult;
 
-public class TDLTestResultsView extends ViewPart{
-	
+public class TDLTestResultsView extends ViewPart {
+
 	public static final String ID = "test.views.TDLTestResultsTestViewPart"; //$NON-NLS-1$
-	
+
 	private TreeViewer m_treeViewer;
-	
+
 	private static final Color RED = new Color(Display.getCurrent(), 255, 102, 102);
 
 	private static final Color GREEN = new Color(Display.getCurrent(), 102, 255, 102);
-	
+
 	private static final Color YELLOW = new Color(Display.getCurrent(), 255, 255, 102);
 
-	
 	private static int filterIndex = -1;
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite contents = new Group(parent, SWT.NULL);
 		contents.setLayout(GridLayoutFactory.swtDefaults().numColumns(2).create());
-	    contents.setLayoutData(GridDataFactory.swtDefaults().create());
-	    
-	    Group filter = new Group(contents, SWT.NULL);
-	    filter.setText("Filters");
-	    filter.setLayout(GridLayoutFactory.swtDefaults().create());
-	    filter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
-	    
-        final Combo filterCombo = new Combo(filter, SWT.NONE);
-        filterCombo.add("All");
-        filterCombo.add("Passed");
-        filterCombo.add("Failed");
-        filterCombo.add("Inconclusive");
+		contents.setLayoutData(GridDataFactory.swtDefaults().create());
+
+		Group filter = new Group(contents, SWT.NULL);
+		filter.setText("Filters");
+		filter.setLayout(GridLayoutFactory.swtDefaults().create());
+		filter.setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).create());
+
+		final Combo filterCombo = new Combo(filter, SWT.NONE);
+		filterCombo.add("All");
+		filterCombo.add("Passed");
+		filterCombo.add("Failed");
+		filterCombo.add("Inconclusive");
 		filterCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -88,7 +86,7 @@ public class TDLTestResultsView extends ViewPart{
 				m_treeViewer.refresh();
 			}
 		});
-		
+
 		Group testVerdict = new Group(contents, SWT.NULL);
 		FillLayout fill = new FillLayout(SWT.VERTICAL);
 		testVerdict.setLayout(fill);
@@ -97,21 +95,21 @@ public class TDLTestResultsView extends ViewPart{
 		gd.horizontalAlignment = SWT.FILL;
 		gd.verticalAlignment = SWT.FILL;
 		testVerdict.setLayoutData(gd);
-		
-	    final Tree addressTree = new Tree(testVerdict, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+
+		final Tree addressTree = new Tree(testVerdict, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		addressTree.setHeaderVisible(true);
 		addressTree.setLinesVisible(true);
-		final StyledText detailTextBox = new StyledText(testVerdict, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION| SWT.WRAP);
-		//show the test result description when mouse down
+		final StyledText detailTextBox = new StyledText(testVerdict,
+				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.WRAP);
+		// show the test result description when mouse down
 		addressTree.addListener(SWT.MouseDown, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				Point point = new Point(event.x, event.y);
 				TreeItem item = addressTree.getItem(point);
 				if (item == null || item.getData() == null) {
-					//do nothing
-				}
-				else if (item.getData() instanceof TDLTestCaseResult) {
+					// do nothing
+				} else if (item.getData() instanceof TDLTestCaseResult) {
 					TDLTestCaseResult verdict = (TDLTestCaseResult) item.getData();
 					if (verdict.getDescription() != null) {
 						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -120,7 +118,7 @@ public class TDLTestResultsView extends ViewPart{
 							}
 						});
 					}
-				}else if (item.getData() instanceof TDLMessageResult) {
+				} else if (item.getData() instanceof TDLMessageResult) {
 					TDLMessageResult verdict = (TDLMessageResult) item.getData();
 					if (verdict.getDescription() != null) {
 						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -132,7 +130,7 @@ public class TDLTestResultsView extends ViewPart{
 				}
 			}
 		});
-		//show the test message/test case/test suite when double click
+		// show the test message/test case/test suite when double click
 		addressTree.addListener(SWT.MouseDoubleClick, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -140,35 +138,31 @@ public class TDLTestResultsView extends ViewPart{
 				TreeItem item = addressTree.getItem(point);
 				EObject eobjectToOpen = null;
 				if (item == null || item.getData() == null) {
-					//do nothing
-				}
-				else if (item.getData() instanceof TDLTestSuiteResult) {
+					// do nothing
+				} else if (item.getData() instanceof TDLTestSuiteResult) {
 					eobjectToOpen = ((TDLTestSuiteResult) item.getData()).getTestSuite();
-				}
-				else if (item.getData() instanceof TDLTestCaseResult) {
-					eobjectToOpen = ((TDLTestCaseResult) item.getData()).getTestCase();	
-					
-				}else if (item.getData() instanceof TDLMessageResult) {
+				} else if (item.getData() instanceof TDLTestCaseResult) {
+					eobjectToOpen = ((TDLTestCaseResult) item.getData()).getTestCase();
+
+				} else if (item.getData() instanceof TDLMessageResult) {
 					eobjectToOpen = ((TDLMessageResult) item.getData()).getMessage();
 				}
 				if (eobjectToOpen != null) {
-					IFile fileToOpen = ResourcesPlugin.getWorkspace().getRoot().getFile(
-							new Path(eobjectToOpen.eResource().getURI().toPlatformString(true)));
-					IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().
-							getDefaultEditor(fileToOpen.getName());
+					IFile fileToOpen = ResourcesPlugin.getWorkspace().getRoot()
+							.getFile(new Path(eobjectToOpen.eResource().getURI().toPlatformString(true)));
+					IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
+							.getDefaultEditor(fileToOpen.getName());
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					try {
 						IEditorPart editor = page.openEditor(new FileEditorInput(fileToOpen), desc.getId());
 						if (editor instanceof EcoreEditor) {
 							TreeViewer tviewer = (TreeViewer) ((EcoreEditor) editor).getViewer();
-							ResourceSet resSet =(ResourceSet) tviewer.getInput();
-							EObject eobjectToOpen2 = resSet.getResources().get(0).getEObject(
-									eobjectToOpen.eResource().getURIFragment(eobjectToOpen));
+							ResourceSet resSet = (ResourceSet) tviewer.getInput();
+							EObject eobjectToOpen2 = resSet.getResources().get(0)
+									.getEObject(eobjectToOpen.eResource().getURIFragment(eobjectToOpen));
 							tviewer.setSelection(new StructuredSelection(eobjectToOpen2));
-						}else if (editor instanceof XtextEditor) {
-							//TODO: how to reveal the object in the xtext editor
 						}
-						
+
 					} catch (PartInitException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -182,12 +176,12 @@ public class TDLTestResultsView extends ViewPart{
 		column1.setAlignment(SWT.LEFT);
 		column1.setText("Test case");
 		column1.setWidth(200);
-		
+
 		TreeColumn column2 = new TreeColumn(addressTree, SWT.LEFT);
 		column2.setAlignment(SWT.LEFT);
 		column2.setText("Result");
 		column2.setWidth(130);
-		
+
 		TreeColumn column3 = new TreeColumn(addressTree, SWT.LEFT);
 		column3.setAlignment(SWT.LEFT);
 		column3.setText("Description");
@@ -198,7 +192,7 @@ public class TDLTestResultsView extends ViewPart{
 		m_treeViewer.addFilter(new DataFilter());
 		m_treeViewer.collapseAll();
 	}
-	
+
 	private class TDLTestResultContentProvider implements ITreeContentProvider {
 
 		@Override
@@ -215,9 +209,9 @@ public class TDLTestResultsView extends ViewPart{
 				return ((TDLTestSuiteResult) parentElement).getTestCaseResults().toArray();
 			}
 			if (parentElement instanceof TDLTestCaseResult) {
-				return  ((TDLTestCaseResult) parentElement).getTdlMessages().toArray();
+				return ((TDLTestCaseResult) parentElement).getTdlMessages().toArray();
 			}
-			return new Object[0]; 
+			return new Object[0];
 		}
 
 		@Override
@@ -256,13 +250,13 @@ public class TDLTestResultsView extends ViewPart{
 		@Override
 		public void addListener(ILabelProviderListener listener) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void dispose() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -274,7 +268,7 @@ public class TDLTestResultsView extends ViewPart{
 		@Override
 		public void removeListener(ILabelProviderListener listener) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -282,7 +276,7 @@ public class TDLTestResultsView extends ViewPart{
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 		private Color getBackground(Object element) {
 			if (element instanceof TDLTestSuiteResult) {
 				return ((TDLTestSuiteResult) element).getNumOfFailedTestCases() == 0 ? GREEN : RED;
@@ -291,11 +285,9 @@ public class TDLTestResultsView extends ViewPart{
 				TDLTestCaseResult result = (TDLTestCaseResult) element;
 				if (result.getValue() == TDLTestResultUtil.PASS) {
 					return GREEN;
-				}
-				else if(result.getValue() == TDLTestResultUtil.INCONCLUSIVE) {
+				} else if (result.getValue() == TDLTestResultUtil.INCONCLUSIVE) {
 					return YELLOW;
-				}
-				else if(result.getValue() == TDLTestResultUtil.FAIL) {
+				} else if (result.getValue() == TDLTestResultUtil.FAIL) {
 					return RED;
 				}
 			}
@@ -303,11 +295,9 @@ public class TDLTestResultsView extends ViewPart{
 				TDLMessageResult result = (TDLMessageResult) element;
 				if (result.getValue() == TDLTestResultUtil.PASS) {
 					return GREEN;
-				}
-				else if (result.getFailure()) {
+				} else if (result.getFailure()) {
 					return YELLOW;
-				}
-				else if (result.getValue() == TDLTestResultUtil.FAIL) {
+				} else if (result.getValue() == TDLTestResultUtil.FAIL) {
 					return RED;
 				}
 			}
@@ -324,6 +314,7 @@ public class TDLTestResultsView extends ViewPart{
 			// TODO Auto-generated method stub
 			return null;
 		}
+
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			String columnText = "";
@@ -336,16 +327,16 @@ public class TDLTestResultsView extends ViewPart{
 			}
 			if (element instanceof TDLTestSuiteResult) {
 				TDLTestSuiteResult result = (TDLTestSuiteResult) element;
-				switch(columnIndex) {
+				switch (columnIndex) {
 				case 0:
 					columnText = result.getTestSuiteName();
 					break;
 				case 1:
 					if (result.getNumOfFailedTestCases() == 0) {
 						columnText = TDLTestResultUtil.PASS;
-					}else if (result.getNumOfInconclusiveTestCases() > 0) {
+					} else if (result.getNumOfInconclusiveTestCases() > 0) {
 						columnText = TDLTestResultUtil.INCONCLUSIVE;
-					}else {
+					} else {
 						columnText = TDLTestResultUtil.FAIL;
 					}
 					break;
@@ -382,12 +373,13 @@ public class TDLTestResultsView extends ViewPart{
 					break;
 				}
 			}
-			return columnText; 
+			return columnText;
 		}
 
 	}
-private class DataFilter extends ViewerFilter {
-		
+
+	private class DataFilter extends ViewerFilter {
+
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (filterIndex == -1 || filterIndex == 0) {
@@ -432,9 +424,10 @@ private class DataFilter extends ViewerFilter {
 			return false;
 		}
 	}
+
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

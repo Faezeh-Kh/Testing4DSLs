@@ -13,19 +13,16 @@ public class TestSuitePackageGenerator {
 	private Package dslSpecificEventsPackage;
 	private Package dslSpecificTypesPackage;
 	private Package testConfigurationPackage;
-	
-	public TestSuitePackageGenerator(String dslFilePath, 
-			Package commonPackage, 
-			Package dslSpecificTypesPackage, 
-			Package dslSpecificEventsPackage,
-			Package testConfigurationPackage) throws IOException {
+
+	public TestSuitePackageGenerator(Package commonPackage, Package dslSpecificTypesPackage,
+			Package dslSpecificEventsPackage, Package testConfigurationPackage) throws IOException {
 		factory = tdlFactory.eINSTANCE;
 		this.commonPackage = commonPackage;
 		this.dslSpecificTypesPackage = dslSpecificTypesPackage;
 		this.dslSpecificEventsPackage = dslSpecificEventsPackage;
-		this.testConfigurationPackage = testConfigurationPackage;		
+		this.testConfigurationPackage = testConfigurationPackage;
 	}
-	
+
 	public Package generateTestSuitePackage() {
 		testSuitePackage = factory.createPackage();
 		testSuitePackage.setName("testSuite");
@@ -45,12 +42,12 @@ public class TestSuitePackageGenerator {
 			ElementImport dslSpecificEventsPackageImport = factory.createElementImport();
 			dslSpecificEventsPackageImport.setImportedPackage(dslSpecificEventsPackage);
 			testSuitePackage.getImport().add(dslSpecificEventsPackageImport);
-		}	
+		}
 		ElementImport testConfigurationImport = factory.createElementImport();
 		testConfigurationImport.setImportedPackage(testConfigurationPackage);
 		testSuitePackage.getImport().add(testConfigurationImport);
 	}
-	
+
 	public Package getTestSuitePackage() {
 		return testSuitePackage;
 	}

@@ -1,126 +1,35 @@
 package org.imt.tdl.libraryGenerator;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.m2m.atl.common.ATLExecutionException;
-import org.eclipse.m2m.atl.core.ATLCoreException;
-import org.eclipse.m2m.atl.core.emf.EMFModel;
+import org.eclipse.emf.ecore.EPackage;
 import org.etsi.mts.tdl.DataType;
-import org.etsi.mts.tdl.Member;
 import org.etsi.mts.tdl.Package;
-import org.etsi.mts.tdl.PackageableElement;
-import org.etsi.mts.tdl.SimpleDataType;
-import org.etsi.mts.tdl.StructuredDataType;
-import org.etsi.mts.tdl.tdlFactory;
-import org.imt.atl.ecore2tdl.files.Ecore2tdl;
-import org.imt.tdl.utilities.DSLProcessor;
-import org.imt.tdl.utilities.PathHelper;
 
 public class DSLSpecificTypesGenerator {
 
-	private String dslFilePath;
-	private Package dslSpecificTypesPackage;
-	private Map<String, DataType> dslSpecificTypes = new HashMap<String, DataType>();
-	private List<DataType> dynamicTypes = new ArrayList<>();
-	
-	public DSLSpecificTypesGenerator (String dslFilePath) throws IOException{
-		this.dslFilePath = dslFilePath;
+	private Ecore2TDLTransformation transformer;
+
+	public DSLSpecificTypesGenerator() {
 	}
 
-	public Package generateDslSpecificTypes() throws IOException {
-		Path dslPath = (new PathHelper()).getPath(dslFilePath);
-		DSLProcessor dslProcessor = new DSLProcessor(dslPath);
-		String metamodelPath = dslProcessor.getPath2Ecore().replaceFirst("resource", "plugin");
-		String IN_model_path = metamodelPath;
-		try {
-			Ecore2tdl runner = new Ecore2tdl();
-			runner.loadModels(IN_model_path);
-			runner.doEcore2tdl(new NullProgressMonitor());
-			EMFModel outModel = (EMFModel) runner.getOutModel();
-			Resource dslTypesRes = outModel.getResource();
-			dslSpecificTypesPackage = getDSLSpecificTypesPackage(dslTypesRes);
-			for (int i=0; i<dslSpecificTypesPackage.getPackagedElement().size();i++) {
-				PackageableElement p = dslSpecificTypesPackage.getPackagedElement().get(i);
-				if (p instanceof DataType) {
-					dslSpecificTypes.put(p.getName().toLowerCase(), (DataType)p);
-					//recognizing dynamic data types for being used as model state
-					if (p instanceof StructuredDataType) {
-						StructuredDataType sDataType = (StructuredDataType) p;
-						if (isDynamic(sDataType)) {
-							dynamicTypes.add(sDataType);
-						}else if (sDataType.getExtension() != null) {
-							if (sDataType.getExtension().stream().map(e -> (DataType) e.getExtending()).
-								anyMatch(e -> isDynamic(e) || dynamicTypes.contains(e))) {
-								dynamicTypes.add(sDataType);
-							}
-						}
-					}
-				}
-			}
-			//generating a simple type for EObject
-			SimpleDataType eobjectType = tdlFactory.eINSTANCE.createSimpleDataType();
-			eobjectType.setName("EObject");
-			dslSpecificTypesPackage.getPackagedElement().add(eobjectType);
-			dslSpecificTypes.put(eobjectType.getName().toLowerCase(), eobjectType);
-		} catch (ATLCoreException e) {
-			e.printStackTrace();
-		} catch (ATLExecutionException e) {
-			e.printStackTrace();
-		}
+	public Package generateDslSpecificTypes(EPackage ePackage) {
+		transformer = new Ecore2TDLTransformation();
+		transformer.run(ePackage);
 		System.out.println("dsl-specific types package generated successfully");
-		return dslSpecificTypesPackage;
-	}
-	
-	private Package getDSLSpecificTypesPackage(Resource dslTypesRes) {
-		Package firstPackage = (Package) dslTypesRes.getContents().get(0);
-		if (dslTypesRes.getContents().size()==1) {
-			return firstPackage;
-		}
-		for (int i=1; i<dslTypesRes.getContents().size(); i++) {
-			Package iPackage = (Package) dslTypesRes.getContents().get(i);
-			firstPackage.getPackagedElement().addAll(iPackage.getPackagedElement());
-		}
-		return firstPackage;
+		return transformer.getRootTdlPackage();
 	}
 
-	private boolean isDynamic(DataType dataType) {
-		if (dataType instanceof StructuredDataType) {
-			StructuredDataType type = (StructuredDataType) dataType;
-			for (int j=0; j < type.getAnnotation().size(); j++){
-				String annotation = type.getAnnotation().get(j).getKey().getName().toString();
-				if (annotation.contains("dynamic")||annotation.contains("aspect")) {
-					return true;
-				}
-			}
-			for (int j=0; j < type.getMember().size(); j++) {
-				Member m = type.getMember().get(j);
-				for (int k=0; k < m.getAnnotation().size(); k++) {
-					String annotation = m.getAnnotation().get(k).getKey().getName().toString();
-					if (annotation.contains("dynamic")||annotation.contains("aspect")) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-	
 	public Map<String, DataType> getDslSpecificTypes() {
-		return dslSpecificTypes;
+		return transformer.getDslSpecificTypes();
 	}
-	
-	public Package getDslSpecificTypesPackage () {
-		return dslSpecificTypesPackage;
+
+	public Package getDslSpecificTypesPackage() {
+		return transformer.getRootTdlPackage();
 	}
-	
-	public List<DataType> getDynamicTypes(){
-		return dynamicTypes;
+
+	public List<DataType> getDynamicTypes() {
+		return transformer.getDynamicTypes();
 	}
 }

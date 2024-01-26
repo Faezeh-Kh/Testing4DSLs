@@ -157,7 +157,6 @@ class TestConfigurationAspect{
 	def void activateConfiguration(EngineFactory launcher){
 		val dslPath = PackageAspect.pathHelper.DSLPath
 		PackageAspect.dslProcessor = new DSLProcessor(dslPath)
-		dslProcessor.loadDSLMetaclasses
 		
 		launcher.DSLPath = dslPath
 		launcher.MUTPath = PackageAspect.pathHelper.modelUnderTestPath

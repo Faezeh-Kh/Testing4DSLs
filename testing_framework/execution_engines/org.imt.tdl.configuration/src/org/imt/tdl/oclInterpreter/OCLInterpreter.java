@@ -25,7 +25,7 @@ public class OCLInterpreter {
 
 	protected OCLExpression<EClassifier> expression = null;
 	protected Query<EClassifier, EClass, EObject> queryEval = null;
-	
+
 	private ArrayList<EObject> resultAsObject;
 	private ArrayList<String> resultAsString;
 
@@ -52,34 +52,34 @@ public class OCLInterpreter {
 		resultAsString = new ArrayList<>();
 		if (res instanceof Collection<?>) {
 			if (res instanceof LinkedHashSet<?>) {
-				LinkedHashSet<?> queryResult =  (LinkedHashSet<?>) res;
+				LinkedHashSet<?> queryResult = (LinkedHashSet<?>) res;
 				Iterator<?> it = queryResult.iterator();
 				while (it.hasNext()) {
 					EObject object = (EObject) it.next();
 					resultAsObject.add(object);
 					resultAsString.add(TDLTestResultUtil.getInstance().eObjectLabelProvider(object));
 				}
-			}else if (res instanceof ArrayList<?>) {
-				ArrayList<?> queryResult =  (ArrayList<?>) res;
+			} else if (res instanceof ArrayList<?>) {
+				ArrayList<?> queryResult = (ArrayList<?>) res;
 				for (int i = 0; i < queryResult.size(); i++) {
-					if (queryResult.get(i)== null) {
+					if (queryResult.get(i) == null) {
 						resultAsObject.add(null);
 						resultAsString.add("null");
-					}else {
+					} else {
 						resultAsObject.add((EObject) queryResult.get(i));
 						resultAsString.add("'" + queryResult.get(i).toString() + "'");
 					}
 				}
 			}
-		}else {
+		} else {
 			if (res instanceof EObject) {
 				EObject object = (EObject) res;
 				resultAsObject.add(object);
 				resultAsString.add(TDLTestResultUtil.getInstance().eObjectLabelProvider(object));
-			}else if (res == null){
+			} else if (res == null) {
 				resultAsObject.add(null);
 				resultAsString.add("'" + "null" + "'");
-			}else {//result is a primitive value
+			} else {// result is a primitive value
 				resultAsObject.add(null);
 				resultAsString.add("'" + res.toString() + "'");
 			}
@@ -87,12 +87,14 @@ public class OCLInterpreter {
 		return "PASS: The ocl query evaluated successfully";
 	}
 
-	public ArrayList<String> getResultAsString(){
+	public ArrayList<String> getResultAsString() {
 		return resultAsString;
 	}
+
 	public ArrayList<EObject> getResultAsObject() {
 		return resultAsObject;
 	}
+
 	public void tearDown() throws Exception {
 		oclHelper = null;
 		ocl = null;
