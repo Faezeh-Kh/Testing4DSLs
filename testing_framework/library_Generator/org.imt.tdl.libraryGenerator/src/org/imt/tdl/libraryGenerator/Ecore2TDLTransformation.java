@@ -28,6 +28,7 @@ import org.etsi.mts.tdl.ElementImport;
 import org.etsi.mts.tdl.Extension;
 import org.etsi.mts.tdl.Member;
 import org.etsi.mts.tdl.Package;
+import org.etsi.mts.tdl.PackageableElement;
 import org.etsi.mts.tdl.SimpleDataInstance;
 import org.etsi.mts.tdl.SimpleDataType;
 import org.etsi.mts.tdl.StructuredDataType;
@@ -38,11 +39,14 @@ public class Ecore2TDLTransformation {
 
 	private Package rootTdlPackage;
 
-	private AnnotationType abstractAnnotation;
-	private AnnotationType dynamicAnnotation;
+	private AnnotationType abstractAnnotationType;
+	private AnnotationType dynamicAnnotationType;
+	private AnnotationType containmentAnnotationType;
 
+	private static final String ABSTRACT = "abstract";
 	private static final String DYNAMIC = "dynamic";
 	private static final String ASPECT = "aspect";
+	private static final String CONTAINMENT = "containment";
 
 	private Map<EClassifier, DataType> eclass2type = new HashMap<>();
 	private Map<DataType, CollectionDataType> type2collectionType = new HashMap<>();
@@ -89,6 +93,7 @@ public class Ecore2TDLTransformation {
 			DataType tdlType = classifier2tdlType(eclassifier, tdlPackage);
 			if (tdlType != null) {
 				tdlPackage.getPackagedElement().add(tdlType);
+				setAnnotations(eclassifier, tdlType);
 				eclass2type.put(eclassifier, tdlType);
 			}
 		});
@@ -122,7 +127,6 @@ public class Ecore2TDLTransformation {
 	private StructuredDataType eClass2structuredType(EClass eclass) {
 		StructuredDataType tdlType = factory.createStructuredDataType();
 		tdlType.setName(TDLCodeGenerator.getValidTypeName(eclass.getName()));
-		checkClassAnnotations(eclass, tdlType);
 		return tdlType;
 	}
 
@@ -142,23 +146,33 @@ public class Ecore2TDLTransformation {
 		DataType memberType = eclass2type.get(efeature.getEType());
 		if (memberType != null) {
 			Package ownerPackage = (Package) ownerType.eContainer();
+			boolean isContainment = false;
 			Member member = factory.createMember();
 			member.setName(TDLCodeGenerator.getValidName(efeature.getName()));
-			// for EReferences that can have many values, a CollectionDataType must be set
-			if (efeature instanceof EReference && ((EReference) efeature).isMany()) {
-				member.setDataType(getCollectionDataType(memberType, ownerPackage));
-			} else {
-				member.setDataType(memberType);
-			}
+			if (efeature instanceof EReference) {
+				// for EReferences that can have many values, a CollectionDataType must be set
+				EReference reference = (EReference) efeature;
+				if (reference.isMany()) {
+					memberType = getCollectionDataType(memberType, ownerPackage);
+				}
+				if (reference.isContainment()) {
+					isContainment = true;
+				}
 
-			if (isDynamic(efeature)) {
-				addDynamicAnnotation(member);
-				// if a feature is dynamic, its owner type is considered as dynamic
-				dynamicTypes.add(ownerType);
 			}
+			member.setDataType(memberType);
+
 			// if the type does not exist in the package, add an import to its owner package
 			checkImport(ownerPackage, memberType);
 
+			if (isDynamic(efeature)) {
+				addAnnotation(member, getDynamicAnnotationType());
+				// if a feature is dynamic, its owner type is considered as dynamic
+				dynamicTypes.add(ownerType);
+			}
+			if (isContainment) {
+				addAnnotation(member, getContainmentAnnotationType());
+			}
 			ownerType.getMember().add(member);
 		}
 	}
@@ -169,22 +183,28 @@ public class Ecore2TDLTransformation {
 			collectionType.setName(TDLCodeGenerator.getValidTypeName(memberType.getName() + "s"));
 			collectionType.setItemType(memberType);
 			ownerPackage.getPackagedElement().add(collectionType);
+			checkImport(ownerPackage, memberType);
 			return collectionType;
 		});
 	}
 
-	// if the required type belongs to another package, generate an import in
+	// if the required element belongs to another package, generate an import in
 	// the owner package for the required package
-	private void checkImport(Package ownerPackage, DataType requiredType) {
-		Package requiredPackage = (Package) requiredType.eContainer();
-		if (!EcoreUtil.equals(ownerPackage, requiredPackage)) {
+	private void checkImport(Package ownerPackage, PackageableElement requiredElement) {
+		Package requiredPackage = (Package) requiredElement.eContainer();
+		if (!EcoreUtil.equals(ownerPackage, requiredPackage)
+				&& !alreadyImported(ownerPackage, requiredPackage, requiredElement)) {
 			ElementImport tdlImport = factory.createElementImport();
 			tdlImport.setImportedPackage(requiredPackage);
-			if (ownerPackage.getImport().stream()
-					.noneMatch(impo -> impo.getImportedPackage().equals(requiredPackage))) {
-				ownerPackage.getImport().add(tdlImport);
-			}
+			tdlImport.getImportedElement().add(requiredElement);
+			ownerPackage.getImport().add(tdlImport);
 		}
+	}
+
+	private boolean alreadyImported(Package ownerPackage, Package requiredPackage, PackageableElement requiredElement) {
+		return ownerPackage.getImport().stream().anyMatch(
+				impo -> impo.getImportedPackage().equals(requiredPackage) && (impo.getImportedElement() == null
+						|| impo.getImportedElement().isEmpty() || impo.getImportedElement().contains(requiredElement)));
 	}
 
 	private void eSuperType2extension(EClass eSuperType, StructuredDataType ownerType) {
@@ -199,7 +219,7 @@ public class Ecore2TDLTransformation {
 
 			// a type is dynamic if any of its super classes are dynamic
 			if (isDynamic(eSuperType) || eSuperType.getEAllSuperTypes().stream().anyMatch(type -> isDynamic(type))) {
-				addDynamicAnnotation(ownerType);
+				addAnnotation(ownerType, getDynamicAnnotationType());
 				dynamicTypes.add(ownerType);
 			}
 		}
@@ -207,40 +227,40 @@ public class Ecore2TDLTransformation {
 
 	/**
 	 * It adds "abstract" and "dynamic" annotations to the tdlType if the eclass is
-	 * abstract and is dynamic, respecitvely. IMPORTANT: due to a bug in TDL
+	 * abstract and is dynamic, respectively. IMPORTANT: due to a bug in TDL
 	 * implementation (https://labs.etsi.org/rep/top/ide/-/issues/52), it is not
 	 * possible to add two annotations to the same element. Accordingly, we only set
 	 * dynamic annotation to non-abstract elements for now.
 	 * 
-	 * @param eclass
+	 * @param eclassifier
 	 * @param tdlType
 	 */
-	private void checkClassAnnotations(EClass eclass, DataType tdlType) {
-		if (isDynamic(eclass)) {
-			addDynamicAnnotation(tdlType);
+	private void setAnnotations(EClassifier eclassifier, DataType tdlType) {
+		if (isDynamic(eclassifier)) {
+			addAnnotation(tdlType, getDynamicAnnotationType());
 			dynamicTypes.add(tdlType);
-		} else if (eclass.isAbstract()) {
-			Annotation abstractAnno = factory.createAnnotation();
-			abstractAnno.setKey(getAbstractAnnotation());
-			abstractAnno.setAnnotatedElement(tdlType);
-			tdlType.getAnnotation().add(abstractAnno);
-		}
-	}
-
-	private void addDynamicAnnotation(Element element) {
-		// due to a bug in TDL implementation
-		// (https://labs.etsi.org/rep/top/ide/-/issues/52), only one annotation can be
-		// given to the same element
-		if (element.getAnnotation().isEmpty()) {
-			Annotation dynamicAnno = factory.createAnnotation();
-			dynamicAnno.setKey(getDynamicAnnotation());
-			dynamicAnno.setAnnotatedElement(element);
-			element.getAnnotation().add(dynamicAnno);
+		} else if (eclassifier instanceof EClass && ((EClass) eclassifier).isAbstract()) {
+			addAnnotation(tdlType, getAbstractAnnotationType());
 		}
 	}
 
 	private boolean isDynamic(EModelElement eelement) {
 		return eelement.getEAnnotation(DYNAMIC) != null || eelement.getEAnnotation(ASPECT) != null;
+	}
+
+	private void addAnnotation(Element annotated, AnnotationType annotationType) {
+		// due to a bug in TDL implementation
+		// (https://labs.etsi.org/rep/top/ide/-/issues/52), it is not possible to add
+		// two annotations to the same element.
+		if (annotated.getAnnotation().isEmpty()) {
+			Annotation annot = factory.createAnnotation();
+			annot.setKey(annotationType);
+			annot.setAnnotatedElement(annotated);
+			annotated.getAnnotation().add(annot);
+			if (annotated.eContainer() != null && annotated.eContainer() instanceof Package) {
+				checkImport((Package) annotated.eContainer(), annotationType);
+			}
+		}
 	}
 
 	private SimpleDataType eDataType2tdlType(EDataType etype) {
@@ -288,20 +308,28 @@ public class Ecore2TDLTransformation {
 		return tdlType;
 	}
 
-	private AnnotationType getAbstractAnnotation() {
-		if (abstractAnnotation == null) {
-			abstractAnnotation = generateAnnotationType("abstract");
-			rootTdlPackage.getPackagedElement().add(abstractAnnotation);
+	private AnnotationType getAbstractAnnotationType() {
+		if (abstractAnnotationType == null) {
+			abstractAnnotationType = generateAnnotationType(ABSTRACT);
+			rootTdlPackage.getPackagedElement().add(abstractAnnotationType);
 		}
-		return abstractAnnotation;
+		return abstractAnnotationType;
 	}
 
-	private AnnotationType getDynamicAnnotation() {
-		if (dynamicAnnotation == null) {
-			dynamicAnnotation = generateAnnotationType("dynamic");
-			rootTdlPackage.getPackagedElement().add(dynamicAnnotation);
+	private AnnotationType getDynamicAnnotationType() {
+		if (dynamicAnnotationType == null) {
+			dynamicAnnotationType = generateAnnotationType(DYNAMIC);
+			rootTdlPackage.getPackagedElement().add(dynamicAnnotationType);
 		}
-		return dynamicAnnotation;
+		return dynamicAnnotationType;
+	}
+
+	private AnnotationType getContainmentAnnotationType() {
+		if (containmentAnnotationType == null) {
+			containmentAnnotationType = generateAnnotationType(CONTAINMENT);
+			rootTdlPackage.getPackagedElement().add(containmentAnnotationType);
+		}
+		return containmentAnnotationType;
 	}
 
 	private AnnotationType generateAnnotationType(String name) {

@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -79,6 +83,16 @@ public class TDLCodeGenerator {
 		testSuitePackage = testSuitePackageGenerator.generateTestSuitePackage();
 
 		System.out.println("start saving packages");
+		Job job = new Job("Saving generated packages") {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				savePackages(tdlProjectPath);
+				return MultiStatus.OK_STATUS;
+			}
+		};
+		job.schedule();
+
 		savePackages(tdlProjectPath);
 		System.out.println("all packages are saved successfully");
 	}
@@ -86,7 +100,7 @@ public class TDLCodeGenerator {
 	private static final String GEN_FOLDER = "generated";
 	private static final String TDL_EXTENSION = ".tdltx";
 
-	public void savePackages(String tdlProjectPath) throws IOException {
+	public void savePackages(String tdlProjectPath) {
 		Injector injector = new TDLtxStandaloneSetup().createInjectorAndDoEMFRegistration();
 		ResourceSet rs = injector.getInstance(ResourceSet.class);
 
@@ -112,13 +126,17 @@ public class TDLCodeGenerator {
 		Resource testSuitePackageRes = rs.createResource(URI.createPlatformResourceURI(path, false));
 		testSuitePackageRes.getContents().add(testSuitePackage);
 
-		dslSpecificTypesRes.save(Collections.emptyMap());
-		commonPackageRes.save(Collections.emptyMap());
-		if (dslSpecificEventsRes != null) {
-			dslSpecificEventsRes.save(Collections.emptyMap());
+		try {
+			dslSpecificTypesRes.save(Collections.emptyMap());
+			commonPackageRes.save(Collections.emptyMap());
+			if (dslSpecificEventsRes != null) {
+				dslSpecificEventsRes.save(Collections.emptyMap());
+			}
+			configurationRes.save(Collections.emptyMap());
+			testSuitePackageRes.save(Collections.emptyMap());
+		} catch (IOException e) {
+			// TODO: handle exception
 		}
-		configurationRes.save(Collections.emptyMap());
-		testSuitePackageRes.save(Collections.emptyMap());
 
 		dslSpecificTypesRes.unload();
 		commonPackageRes.unload();
