@@ -1,7 +1,6 @@
 package org.imt.k3tdl.interpreter
 
 import fr.inria.diverse.k3.al.annotationprocessor.Aspect
-
 import fr.inria.diverse.k3.al.annotationprocessor.OverrideAspectMethod
 import java.util.ArrayList
 import org.eclipse.emf.common.util.EList
@@ -11,6 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.transaction.RecordingCommand
 import org.eclipse.emf.transaction.TransactionalEditingDomain
 import org.eclipse.emf.transaction.util.TransactionUtil
+import org.etsi.mts.tdl.CollectionDataType
 import org.etsi.mts.tdl.DataInstance
 import org.etsi.mts.tdl.DataInstanceUse
 import org.etsi.mts.tdl.DataType
@@ -39,50 +39,56 @@ import static extension org.imt.k3tdl.interpreter.StructuredDataInstanceAspect.*
 
 @Aspect (className = DataType)
 class DataTypeAspect{
+	static final String DYNAMIC = "dynamic";
+	static final String ASPECT = "aspect";
+	static final String ABSTRACT = "abstract";
+	static final String ACCEPTED_EVENT = "AcceptedEvent";
+	static final String EXPOSED_EVENT = "ExposedEvent";
+	
 	def boolean isDynamicType() {
-		if (_self instanceof StructuredDataType){
-			val StructuredDataType type = _self as StructuredDataType
-			//check if the type has a 'dynamic' or 'aspect' annotation itself
-			for (i : 0 ..<type.annotation.size){
-				val annotation = type.annotation.get(i).key.name.toString
-				if (annotation.contains("dynamic") || annotation.contains("aspect")) {
+		//check if the type has a 'dynamic' or 'aspect' annotation itself
+			for (i : 0 ..<_self.annotation.size){
+				val annotation = _self.annotation.get(i).key.name.toString
+				if (annotation.contains(DYNAMIC) || annotation.contains(ASPECT)) {
 					return true;
 				}
 			}
+		if (_self instanceof StructuredDataType){
+			val StructuredDataType type = _self as StructuredDataType
 			//check if as least one of the members of type has a 'dynamic' or 'aspect' annotation
 			for (i : 0 ..<type.member.size){
 				val Member m = type.member.get(i)
 				for (j : 0 ..<m.annotation.size){
 					val annotation = m.annotation.get(j).key.name.toString
-					if (annotation.contains("dynamic") || annotation.contains("aspect")) {
+					if (annotation.contains(DYNAMIC) || annotation.contains(ASPECT)) {
 						return true;
 					}
 				}
 			}
+		}
+		if (_self instanceof CollectionDataType){
+			return (_self as CollectionDataType).itemType.isDynamicType
 		}
 		return false;
 	}
 	
 	
 	def boolean isConcreteEcoreType() {
-		val annotation = _self.annotation.stream.filter(
-			a | a.key.name.equals("abstract")
-		).findFirst
-		return !annotation.isPresent
+		return _self.annotation.stream.noneMatch(
+			a | a.key.name.equals(ABSTRACT)
+		)
 	}
 	
 	def boolean isAcceptedEvent() {
-		val annotation = _self.annotation.stream.filter(
-			a | a.key.name.equals("AcceptedEvent")
-		).findFirst
-		return annotation.isPresent
+		return _self.annotation.stream.anyMatch(
+			a | a.key.name.equals(ACCEPTED_EVENT)
+		)
 	}
 	
 	def boolean isExposedEvent() {
-		val annotation = _self.annotation.stream.filter(
-			a | a.key.name.equals("ExposedEvent")
-		).findFirst
-		return annotation.isPresent
+		return _self.annotation.stream.anyMatch(
+			a | a.key.name.equals(EXPOSED_EVENT)
+		)
 	}
 	
 	def String getValidName(){
@@ -263,6 +269,7 @@ class StructuredDataInstanceAspect extends DataInstanceAspect{
 		return status
 	}
 }
+
 @Aspect (className = DataInstanceUse)
 class DataInstanceUseAspect extends StaticDataUseAspect{
 	
