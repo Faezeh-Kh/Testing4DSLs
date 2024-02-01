@@ -1,6 +1,6 @@
 package org.imt.tdl.sequentialEngine;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -9,18 +9,16 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.gemoc.dsl.Dsl;
 import org.eclipse.gemoc.dsl.debug.ide.launch.AbstractDSLLaunchConfigurationDelegate;
 import org.eclipse.gemoc.dsl.debug.ide.sirius.ui.launch.AbstractDSLLaunchConfigurationDelegateSiriusUI;
 import org.eclipse.gemoc.executionframework.engine.commons.EngineContextException;
 import org.eclipse.gemoc.executionframework.engine.commons.sequential.SequentialRunConfiguration;
 import org.eclipse.gemoc.xdsmlframework.api.core.ExecutionMode;
+import org.imt.tdl.utilities.DSLProcessor;
 
-public abstract class AbstractEngine implements ISequentialExecutionEngine{
-	
+public abstract class AbstractEngine implements ISequentialExecutionEngine {
+
 	protected ExecutionMode executionMode;
 	protected String _modelLocation;
 	protected String _siriusRepresentationLocation;
@@ -31,21 +29,24 @@ public abstract class AbstractEngine implements ISequentialExecutionEngine{
 	protected Boolean _animationFirstBreak;
 	protected String _modelInitializationMethod;
 	protected String _modelInitializationArguments;
-	
+
 	protected Resource MUTResource = null;
-	
+
 	private ILaunchConfigurationWorkingCopy configurationWorkingCopy;
 	protected ILaunchConfiguration launchConfiguration;
 	protected SequentialRunConfiguration runConfiguration;
 	protected CustomModelExecutionContext executioncontext;
-	
+
+	private static final String SEPERATOR = "/";
+
 	@Override
 	public void setUp(String MUTPath, String DSLPath) {
-		_modelLocation = MUTPath;
-		_siriusRepresentationLocation = MUTPath.split(File.separator)[1] + File.separator + "representations.aird";
+		_modelLocation = MUTPath.replaceAll("\\\\", SEPERATOR);
+		_siriusRepresentationLocation = SEPERATOR + _modelLocation.split(SEPERATOR)[1] + SEPERATOR
+				+ "representations.aird";
 		_delay = "0";
-		_language = this.getDslName(DSLPath);
-		_entryPointModelElement = File.separator;
+		_language = (new DSLProcessor(Paths.get(DSLPath))).getDSLID();
+		_entryPointModelElement = SEPERATOR;
 		_entryPointMethod = getModelEntryPointMethodName();
 		_animationFirstBreak = false;
 		_modelInitializationMethod = getModelInitializationMethodName();
@@ -54,14 +55,16 @@ public abstract class AbstractEngine implements ISequentialExecutionEngine{
 		createLaunchConfiguration();
 		configureEngine();
 	}
-	
+
 	protected abstract String getModelInitializationMethodName();
+
 	protected abstract String getModelEntryPointMethodName();
-	
+
 	private void createLaunchConfiguration() {
 		// Create a new Launch Configuration
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType type = manager.getLaunchConfigurationType("org.eclipse.gemoc.execution.sequential.javaengine.ui.launcher");
+		ILaunchConfigurationType type = manager
+				.getLaunchConfigurationType("org.eclipse.gemoc.execution.sequential.javaengine.ui.launcher");
 		configurationWorkingCopy = null;
 		try {
 			configurationWorkingCopy = type.newInstance(null, "Debug MUT");
@@ -70,25 +73,34 @@ public abstract class AbstractEngine implements ISequentialExecutionEngine{
 		}
 		// Set its attributes
 		configurationWorkingCopy.setAttribute(AbstractDSLLaunchConfigurationDelegate.RESOURCE_URI, _modelLocation);
-		configurationWorkingCopy.setAttribute(AbstractDSLLaunchConfigurationDelegateSiriusUI.SIRIUS_RESOURCE_URI, _siriusRepresentationLocation);
+		configurationWorkingCopy.setAttribute(AbstractDSLLaunchConfigurationDelegateSiriusUI.SIRIUS_RESOURCE_URI,
+				_siriusRepresentationLocation);
 		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_DELAY, Integer.parseInt(_delay));
 		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_SELECTED_LANGUAGE, _language);
-		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_MODEL_ENTRY_POINT, _entryPointModelElement);
+		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_MODEL_ENTRY_POINT,
+				_entryPointModelElement);
 		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_METHOD_ENTRY_POINT, _entryPointMethod);
-		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_INITIALIZATION_METHOD, _modelInitializationMethod);
-		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_INITIALIZATION_ARGUMENTS, _modelInitializationArguments);
+		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_INITIALIZATION_METHOD,
+				_modelInitializationMethod);
+		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_INITIALIZATION_ARGUMENTS,
+				_modelInitializationArguments);
 		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.LAUNCH_BREAK_START, _animationFirstBreak);
 		// DebugModelID for sequential engine
-		//configuration.setAttribute(SequentialRunConfiguration.DEBUG_MODEL_ID, Activator.DEBUG_MODEL_ID);
-		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.DEBUG_MODEL_ID, "org.eclipse.gemoc.execution.sequential.javaengine.ui.debugModel");
-		
-		//enabling trace addon
+		// configuration.setAttribute(SequentialRunConfiguration.DEBUG_MODEL_ID,
+		// Activator.DEBUG_MODEL_ID);
+		configurationWorkingCopy.setAttribute(SequentialRunConfiguration.DEBUG_MODEL_ID,
+				"org.eclipse.gemoc.execution.sequential.javaengine.ui.debugModel");
+
+		// enabling trace addon
 		configurationWorkingCopy.setAttribute("Generic MultiDimensional Data Trace", true);
 		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_booleanOption", false);
-		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_equivClassComputing_booleanOption", false);
-		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_saveTraceOnEngineStop_booleanOption", false);
-		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_saveTraceOnStep_booleanOption", false);
-		
+		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_equivClassComputing_booleanOption",
+				false);
+		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_saveTraceOnEngineStop_booleanOption",
+				false);
+		configurationWorkingCopy.setAttribute("org.eclipse.gemoc.trace.gemoc.addon_saveTraceOnStep_booleanOption",
+				false);
+
 		try {
 			launchConfiguration = configurationWorkingCopy.doSave();
 		} catch (CoreException e) {
@@ -113,16 +125,10 @@ public abstract class AbstractEngine implements ISequentialExecutionEngine{
 		}
 		MUTResource = executioncontext.getResourceModel();
 	}
-	
+
 	@Override
 	public void setModelResource(Resource resource) {
 		this.MUTResource = resource;
-	}
-
-	private String getDslName(String dslFilePath) {
-		Resource dslRes = (new ResourceSetImpl()).getResource(URI.createURI(dslFilePath), true);
-		Dsl dsl = (Dsl)dslRes.getContents().get(0);
-		return dsl.getEntry("name").getValue().toString();
 	}
 
 	public void breakAtStart() {
