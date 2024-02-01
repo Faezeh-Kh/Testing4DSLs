@@ -12,10 +12,10 @@ Package reactiveATM_testSuite {
 	IntegerAttribute cardPin (_name="cardPin");
 	IntegerAttribute cardBalance (_name="cardBalance");
 	
-	Signal Pin (_name = "Pin", attributes = enteredPin);
-	IntegerAttribute enteredPin (_name = "pin");
+	Signal Pin (_name = "Pin", attributes = {enteredPin});
+	IntegerAttribute enteredPin (_name = "enteredPin");
 	
-	Signal Amount (_name = "Amount", attributes = enteredAmount);
+	Signal Amount (_name = "Amount", attributes = {enteredAmount});
 	IntegerAttribute enteredAmount (_name = "withdrawAmount");
 	
 	SignalEventOccurrence signal_occurrence();
@@ -32,33 +32,26 @@ Package reactiveATM_testSuite {
 	Behavior notEnoughMoneyMsg (_name = "notEnoughMoneyMsg");
 	Behavior deliverCash (_name = "deliverCash");
 	
-	Test Description test__wrongPin uses configuration xPSSMConfiguration{
+	Test Description test__wrongPin uses configuration WithdrawCashConfiguration{
 		tester.reactiveGate sends _run (state_machine = ATM) to statemachine.reactiveGate;
-		statemachine.reactiveGate sends behavior_executed (
-			behavior = insertCardMsg
-		) to tester.reactiveGate;
+		statemachine.reactiveGate sends behavior_executed (behavior = insertCardMsg) to tester.reactiveGate;
 		tester.reactiveGate sends signal_received (
 			state_machine = ATM, 
 			signal_occurrence = signal_occurrence (
 				signal = Card,
-				attributeValues = {cardPinValue (_value = "1234"), 
-					cardBalanceValue (_value = "1000")})
+				attributeValues = {cardPinValue (_value = "1234"), cardBalanceValue (_value = "1000")})
 		) to statemachine.reactiveGate;
-		statemachine.reactiveGate sends behavior_executed (
-			behavior = enterPinMsg
-		) to tester.reactiveGate;
+		statemachine.reactiveGate sends behavior_executed (behavior = enterPinMsg) to tester.reactiveGate;
 		tester.reactiveGate sends signal_received (
 			state_machine = ATM, 
 			signal_occurrence = signal_occurrence (
 				signal = Pin,
-				attributeValues = enteredPinValue (_value = "1111"))
+				attributeValues = {enteredPinValue (_value = "1111")})
 		) to statemachine.reactiveGate;
-		statemachine.reactiveGate sends behavior_executed (
-			behavior = wrongPinMsg
-		) to tester.reactiveGate;
+		statemachine.reactiveGate sends behavior_executed (behavior = wrongPinMsg) to tester.reactiveGate;
 	}
 	
-	Test Description test_successfulWithdraw uses configuration xPSSMConfiguration{
+	Test Description test_successfulWithdraw uses configuration WithdrawCashConfiguration{
 		tester.reactiveGate sends _run (state_machine = ATM) to statemachine.reactiveGate;
 		statemachine.reactiveGate sends behavior_executed (behavior = insertCardMsg) to tester.reactiveGate;
 		tester.reactiveGate sends signal_received (
@@ -85,7 +78,7 @@ Package reactiveATM_testSuite {
 		statemachine.reactiveGate sends behavior_executed (behavior = deliverCash) to tester.reactiveGate;
 	}
 	
-	Test Description test3_wrongAmount uses configuration xPSSMConfiguration{
+	Test Description test3_wrongAmount uses configuration WithdrawCashConfiguration{
 		tester.reactiveGate sends _run (state_machine = ATM) to statemachine.reactiveGate;
 		statemachine.reactiveGate sends behavior_executed (behavior = insertCardMsg) to tester.reactiveGate;
 		tester.reactiveGate sends signal_received (
@@ -111,7 +104,7 @@ Package reactiveATM_testSuite {
 		statemachine.reactiveGate sends behavior_executed (behavior = notEnoughMoneyMsg) to tester.reactiveGate;
 	}
 	
-	Test Description test4_ocl uses configuration xPSSMConfiguration{
+	Test Description test4_ocl uses configuration WithdrawCashConfiguration{
 		tester.reactiveGate sends _run (state_machine = ATM) to statemachine.reactiveGate;
 		statemachine.reactiveGate sends behavior_executed (behavior = insertCardMsg) to tester.reactiveGate;
 		tester.reactiveGate sends signal_received (
