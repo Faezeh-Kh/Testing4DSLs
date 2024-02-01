@@ -36,6 +36,7 @@ import static extension org.imt.k3tdl.interpreter.MemberAspect.*
 import static extension org.imt.k3tdl.interpreter.MemberAssignmentAspect.*
 import static extension org.imt.k3tdl.interpreter.ParameterBindingAspect.*
 import static extension org.imt.k3tdl.interpreter.StructuredDataInstanceAspect.*
+import org.imt.tdl.utilities.PathHelper
 
 @Aspect (className = DataType)
 class DataTypeAspect{
@@ -729,7 +730,7 @@ class LiteralValueUseAspect extends StaticDataUseAspect{
 	def Object getPrimitiveValue(String primitiveTypeName){
 		var String parameterValue = _self.value
 		if (parameterValue.startsWith("\"") || parameterValue.startsWith("'")){
-	        parameterValue = parameterValue.substring(1, parameterValue.length-1)//remove quotation marks
+	        parameterValue = PathHelper.removeQuotes(parameterValue)
 	    }
 	    if (primitiveTypeName.equals("EInt") || primitiveTypeName.equals("EIntegerObject")){
 			return Integer.parseInt(parameterValue)
@@ -746,7 +747,7 @@ class LiteralValueUseAspect extends StaticDataUseAspect{
 	def String assertEquals(Object featureValue){
 		var String parameterValue = _self.value
 		if (parameterValue.startsWith("\"") || parameterValue.startsWith("'")){
-	        parameterValue = parameterValue.substring(1, parameterValue.length-1)//remove quotation marks
+	        parameterValue = PathHelper.removeQuotes(parameterValue)
 	    }
 	    if (featureValue === null && (parameterValue == "null" || parameterValue.isNullOrEmpty)){
 			return TDLTestResultUtil.PASS + ": The expected data is equal to the current data"
@@ -768,7 +769,7 @@ class LiteralValueUseAspect extends StaticDataUseAspect{
 	        override protected doExecute() {
 	        	var parameterValue = _self.value
 	        	if (parameterValue.startsWith("\"") || parameterValue.startsWith("'")){
-	        		parameterValue = parameterValue.substring(1, parameterValue.length-1)//remove quotation marks
+	        		parameterValue = PathHelper.removeQuotes(parameterValue)
 	        	}
 				if (matchedFeature.EType.name.equals("EInt") || matchedFeature.EType.name.equals("EIntegerObject")){
 					object.eSet(matchedFeature, Integer.parseInt(parameterValue));
@@ -787,7 +788,7 @@ class LiteralValueUseAspect extends StaticDataUseAspect{
 		catch(NullPointerException e){//there is no editing domain, so set the value directly
 			var parameterValue = _self.value
         	if (parameterValue.startsWith("\"") || parameterValue.startsWith("'")){
-        		parameterValue = parameterValue.substring(1, parameterValue.length-1)//remove quotation marks
+        		parameterValue = PathHelper.removeQuotes(parameterValue)
         	}
 			if (matchedFeature.EType.name.equals("EInt") || matchedFeature.EType.name.equals("EIntegerObject")){
 				object.eSet(matchedFeature, Integer.parseInt(parameterValue));

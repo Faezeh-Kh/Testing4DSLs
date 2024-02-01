@@ -107,25 +107,39 @@ public class PathHelper {
 		findModelAndDSLPathOfTestCase(testCase);
 	}
 
-	public void findModelAndDSLPathOfTestCase(TestDescription testCase) {
+	public boolean findModelAndDSLPathOfTestCase(TestDescription testCase) {
 		ComponentInstance sutComponent = testCase.getTestConfiguration().getComponentInstance().stream()
-				.filter(ci -> ci.getRole().toString().equals("SUT")).findFirst().get();
+				.filter(ci -> ci.getRole().toString().equals("SUT")).findFirst().orElse(null);
+		if (sutComponent == null) {
+			return false;
+		}
 		for (Annotation a : sutComponent.getAnnotation()) {
 			if (a.getKey().getName().equals(MUTPATH)) {
-				String mutpath = a.getValue().substring(1, a.getValue().length() - 1);
+				String mutpath = removeQuotes(a.getValue());
 				if (modelUnderTestPath == null || !modelUnderTestPath.toString().equals(mutpath)) {
 					modelUnderTestPath = Paths.get(mutpath);
 					// when the modelUnderTestPath is set, find the workspace path
 					findWorkspacePath();
 				}
 			} else if (a.getKey().getName().equals(DSLNAME)) {
-				String dslName = a.getValue().substring(1, a.getValue().length() - 1);
+				String dslName = removeQuotes(a.getValue());
 				if (DSLName == null || !DSLName.equals(dslName)) {
 					DSLName = dslName;
 					DSLPath = findDSLPath(DSLName);
 				}
 			}
 		}
+		return true;
+	}
+
+	public static String removeQuotes(String value) {
+		if (value.startsWith("\"") || value.startsWith("\'")) {
+			value = value.substring(1);
+		}
+		if (value.endsWith("\"") || value.endsWith("\'")) {
+			value = value.substring(0, value.length() - 1);
+		}
+		return value;
 	}
 
 	public String findDSLNameOfTestCase(TestDescription testCase) {
@@ -135,7 +149,7 @@ public class PathHelper {
 				.filter(a -> a.getKey().getName().equals(DSLNAME)).findFirst();
 		if (DSLNameAnnotationOp.isPresent()) {
 			String dslName = DSLNameAnnotationOp.get().getValue();
-			return dslName.substring(1, dslName.length() - 1);
+			return removeQuotes(dslName);
 		}
 		return null;
 	}
