@@ -1,15 +1,18 @@
 Package common {
 	Import all from k3fsmSpecificTypes ;
-	Type OCL ( query of type EString ) ;
-	OCL oclQuery ( query = ? ) ;
-	Type Verdict ;
-	Verdict PASS ;
-	Verdict FAIL ;
-	Verdict INCONCLUSINVE ;
-	Type modelExecutionCommand ;
-	modelExecutionCommand runModel ;
-	modelExecutionCommand runModelAsynchronous ;
-	modelExecutionCommand stopModelExecution ;
-	modelExecutionCommand resetModel ;
-	modelExecutionCommand getModelState ;
+	Type OCL (
+		context of type EObject,
+		query of type EString
+	);
+	OCL oclQuery ? ( context = ?, query = ? );
+	Type Verdict;
+	Verdict PASS;
+	Verdict FAIL;
+	Verdict INCONCLUSINVE;
+	Type modelExecutionCommand;
+	modelExecutionCommand runModel;
+	modelExecutionCommand runModelAsynchronous;
+	modelExecutionCommand stopModelExecution;
+	modelExecutionCommand resetModel;
+	modelExecutionCommand getModelState;
 }

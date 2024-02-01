@@ -1,58 +1,75 @@
 Package k3fsmSpecificTypes {
-	Type FSM ( 
-		_name of type EString , 
-		ownedStates of type State , 
-		initialState of type State , 
-		finalState of type State , 
-		currentState of type State with { dynamic ;} , 
-		unprocessedString of type EString with { dynamic ; } , 
-		consumedString of type EString with { dynamic ; } , 
-		producedString of type EString with { dynamic ; } ) ;
-	Type State ( 
-		_name of type EString , 
-		outgoingTransitions of type Transition , 
-		incomingTransitions of type Transition , 
+	Type FSM (
+		_name of type EString,
+		ownedStates of type States with {
+			containment;
+		} ,
+		initialState of type State ,
+		finalState of type State ,
+		currentState of type State with {
+			dynamic;
+		} ,
+		unprocessedString of type EString with {
+			dynamic;
+		} ,
+		consumedString of type EString with {
+			dynamic;
+		} ,
+		producedString of type EString with {
+			dynamic;
+		}
+	) ;
+	Type State (
+		_name of type EString,
+		outgoingTransitions of type Transitions with {
+			containment;
+		} ,
+		incomingTransitions of type Transitions ,
 		owningFSM of type FSM
 	) ;
-	Type Transition ( 
-		input of type EString , 
-		target of type State , 
-		_name of type EString , 
-		output of type EString , 
-		source of type State
-	) ;
-	Annotation dynamic ;
-	Type EInvocationTargetException ;
-	Type EFeatureMapEntry ;
-	Type EDate ;
-	Type EShortObject ;
-	Type EBigInteger ;
-	Type EIntegerObject ;
-	Type EJavaClass ;
-	Type EDouble ;
-	Type EJavaObject ;
-	Type EEnumerator ;
-	Type ETreeIterator ;
-	Type EDiagnosticChain ;
-	Type EBigDecimal ;
-	Type EResourceSet ;
-	Type EFloat ;
-	Type EDoubleObject ;
-	Type EInt ;
-	Type EResource ;
-	Type EByteObject ;
-	Type EShort ;
-	Type ELongObject ;
-	Type EFloatObject ;
-	Type EBoolean ;
-	Type EFeatureMap ;
-	Type ELong ;
-	Type EByteArray ;
-	Type EString ;
-	Type EBooleanObject ;
-	Type EChar ;
-	Type EByte ;
-	Type EEList ;
-	Type EMap ;
-	Type ECharacterObject ;
+	Type Transition (
+		_name of type EString,
+		input of type EString ,
+		output of type EString ,
+		source of type State ,
+		target of type State
+	);
+	Type EObject;
+	Type EBigDecimal;
+	Type EBigInteger;
+	Type EBoolean;
+	Type EBooleanObject;
+	Type EByte;
+	Type EByteArray;
+	Type EByteObject;
+	Type EChar;
+	Type ECharacterObject;
+	Type EDate;
+	Type EDiagnosticChain;
+	Type EDouble;
+	Type EDoubleObject;
+	Type EEList;
+	Type EEnumerator;
+	Type EFeatureMap;
+	Type EFeatureMapEntry;
+	Type EFloat;
+	Type EFloatObject;
+	Type EInt;
+	Type EIntegerObject;
+	Type EJavaClass;
+	Type EJavaObject;
+	Type ELong;
+	Type ELongObject;
+	Type EMap;
+	Type EResource;
+	Type EResourceSet;
+	Type EShort;
+	Type EShortObject;
+	Type EString;
+	Type ETreeIterator;
+	Type EInvocationTargetException;
+	Collection States of type State;
+	Annotation containment;
+	Annotation dynamic;
+	Collection Transitions of type Transition;
 }
