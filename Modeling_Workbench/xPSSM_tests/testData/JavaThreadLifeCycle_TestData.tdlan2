@@ -44,15 +44,15 @@ Package JavaThreadLifeCycle_TestData {
 	Signal monitorLockAcquired ( _name = "monitorLockAcquired" ) ;
 	SignalEventOccurrence monitorLockAcquired_occurrence ( signal = monitorLockAcquired ) ;
 	IntegerAttribute sleepTime (_name = "sleeptime");
-	IntegerAttributeValue sleepTimeValue ( attribute = sleepTime ) ;
+	IntegerAttributeValue sleepTimeValue ( _attribute = sleepTime ) ;
 	Operation Thread_sleep__ ( _name = "Thread.sleep()" , inParameters = sleepTime);
 	CallEventOccurrence Thread_sleep___occurrence ( operation = Thread_sleep__ ) ;
 	IntegerAttribute waitTimeout (_name = "waitTimeout");
-	IntegerAttributeValue waitTimeoutValue ( attribute = waitTimeout ) ;
+	IntegerAttributeValue waitTimeoutValue ( _attribute = waitTimeout ) ;
 	Operation o_wait__ ( _name = "o.wait()" , inParameters = waitTimeout) ;
 	CallEventOccurrence o_wait___occurrence ( operation = o_wait__ ) ;
 	IntegerAttribute joinTimeout (_name = "joinTimeout");
-	IntegerAttributeValue joinTimeoutValue ( attribute = joinTimeout ) ;
+	IntegerAttributeValue joinTimeoutValue ( _attribute = joinTimeout ) ;
 	Operation t_join__ ( _name = "t.join()" , inParameters = joinTimeout) ;
 	CallEventOccurrence t_join___occurrence ( operation = t_join__ ) ;
 }

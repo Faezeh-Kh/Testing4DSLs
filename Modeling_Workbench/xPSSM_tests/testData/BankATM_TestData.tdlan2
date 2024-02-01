@@ -36,13 +36,13 @@ Package BankATM_TestData {
 	Signal cancel ( _name = "cancel" ) ;
 	SignalEventOccurrence cancel_occurrence ( signal = cancel ) ;
 	IntegerAttribute cardPin ( _name = "cardPin" ) ;
-	IntegerAttributeValue cardPinValue ( attribute = cardPin ) ;
+	IntegerAttributeValue cardPinValue ( _attribute = cardPin ) ;
 	IntegerAttribute cardBalance ( _name = "cardBalance" ) ;
-	IntegerAttributeValue cardBalanceValue ( attribute = cardBalance ) ;
+	IntegerAttributeValue cardBalanceValue ( _attribute = cardBalance ) ;
 	Signal Card ( _name = "Card" , attributes = {cardPin, cardBalance} ) ;
 	SignalEventOccurrence Card_occurrence ( signal = Card ) ;
 	IntegerAttribute pin ( _name = "pin" ) ;
-	IntegerAttributeValue pinValue ( attribute = pin ) ;
+	IntegerAttributeValue pinValue ( _attribute = pin ) ;
 	Signal Pin ( _name = "Pin" , attributes = pin ) ;
 	SignalEventOccurrence Pin_occurrence ( signal = Pin ) ;
 	Signal WithdrawTransaction ( _name = "WithdrawTransaction" ) ;
@@ -50,7 +50,7 @@ Package BankATM_TestData {
 	Signal TransferTransaction ( _name = "TransferTransaction" ) ;
 	SignalEventOccurrence TransferTransaction_occurrence ( signal = TransferTransaction ) ;
 	IntegerAttribute enteredAmount ( _name = "enteredAmount" ) ;
-	IntegerAttributeValue enteredAmountValue ( attribute = enteredAmount ) ;
+	IntegerAttributeValue enteredAmountValue ( _attribute = enteredAmount ) ;
 	Signal Amount ( _name = "Amount" , attributes = enteredAmount ) ;
 	SignalEventOccurrence Amount_occurrence ( signal = Amount ) ;
 }

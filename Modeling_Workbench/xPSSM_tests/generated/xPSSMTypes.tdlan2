@@ -1,113 +1,297 @@
 Package xPSSMTypes {
-	Type CustomSystem ( statemachine of type StateMachine , signals of type Signal , operations of type Operation ) ;
-	Type Signal extends NamedElement ( attributes of type Attribute ) ;
-	Type Operation extends NamedElement ( inParameters of type Attribute , outParameters of type Attribute , return of type Attribute ) ;
+	Type CustomSystem (
+		statemachine of type StateMachine with {
+			containment;
+		},
+		signals of type Signals with {
+			containment;
+		} ,
+		operations of type Operations with {
+			containment;
+		}
+	) ;
+	Type Signal extends NamedElement (
+		attributes of type Attributes with {
+			containment;
+		}
+	) ;
+	Type Operation extends NamedElement (
+		inParameters of type Attributes with {
+			containment;
+		},
+		outParameters of type Attributes with {
+			containment;
+		} ,
+		return of type Attribute with {
+			containment;
+		}
+	) ;
 	Type EventType ( ) with {
-		abstract ;
+		abstract;
 	} ;
-	Type SignalEventType extends EventType ( signal of type Signal ) ;
-	Type CallEventType extends EventType ( operation of type Operation ) ;
-	Type Attribute extends NamedElement ( ) with {
-		abstract ;
-	} ;
-	Type BooleanAttribute extends Attribute ( ) ;
-	Type IntegerAttribute extends Attribute ( ) ;
-	Type StringAttribute extends Attribute ( ) ;
-	Type _Constraint ( ) with {
-		abstract ;
-	} ;
-	Type BooleanConstraint extends _Constraint ( attribute of type BooleanAttribute , value of type EBooleanObject ) ;
-	Type IntegerConstraint extends _Constraint ( attribute of type IntegerAttribute , value of type EIntegerObject ) ;
-	Type StringConstraint extends _Constraint ( attribute of type StringAttribute , value of type EString ) ;
-	Type NamedElement ( _name of type EString ) with {
-		abstract ;
-	} ;
-	Type StateMachine extends NamedElement ( regions of type Region ) ;
-	Type Region extends NamedElement ( vertice of type Vertex , transitions of type Transition , stateMachine of type StateMachine , state of type State , currentVertex of type Vertex with { dynamic ;
-	} ) ;
-	Type Vertex extends NamedElement ( container of type Region , outgoingTransitions of type Transition , incomingTransitions of type Transition ) with {
-		abstract ;
-	} ;
-	Type Pseudostate extends Vertex ( kind of type PseudostateKind , state of type State ) ;
-	Type State extends Vertex ( regions of type Region , entry of type Behavior , doActivity of type Behavior , exit of type Behavior , deferrableTriggers of type Trigger , connectionPoint of type Pseudostate ) ;
-	Type FinalState extends State ( ) ;
-	Type Transition extends NamedElement ( source of type Vertex , target of type Vertex , _triggers of type Trigger , container of type Region , kind of type TransitionKind , effect of type Behavior , constraint of type _Constraint ) ;
-	Type Trigger extends NamedElement ( eventType of type EventType ) ;
-	Type Behavior extends NamedElement ( emittedSignals of type SignalEventOccurrence ) ;
-	Type OperationBehavior extends Behavior ( attributeValues of type AttributeValue ) ;
-	Type AttributeValue ( ) ;
-	Type BooleanAttributeValue extends AttributeValue ( attribute of type BooleanAttribute , value of type EBooleanObject ) ;
-	Type IntegerAttributeValue extends AttributeValue ( attribute of type IntegerAttribute , value of type EIntegerObject ) ;
-	Type StringAttributeValue extends AttributeValue ( attribute of type StringAttribute , value of type EString ) ;
-	Type EventOccurrence ( ) with {
-		abstract ;
-	} ;
-	Type CompletionEventOccurrence ( state of type State ) ;
-	Type SignalEventOccurrence extends EventOccurrence ( signal of type Signal , attributeValues of type AttributeValue with { dynamic ;
-	} ) ;
-	Type CallEventOccurrence extends EventOccurrence ( operation of type Operation , inParameterValues of type AttributeValue with { dynamic ;
-	} , outParameterValues of type AttributeValue with { dynamic ; } , returnValue of type AttributeValue with { dynamic ; } ) ;
-	Type PseudostateKind ;
-	Type TransitionKind ;
-	Type BooleanBinaryOperator ;
-	Type BooleanUnaryOperator ;
-	Type IntegerComparisonOperator ;
-	Type StringComparisonOperator ;
-	BooleanBinaryOperator AND ;
-	BooleanBinaryOperator OR ;
-	BooleanUnaryOperator NOT ;
-	PseudostateKind initial ;
-	PseudostateKind join ;
-	PseudostateKind fork ;
-	PseudostateKind _terminate ;
-	PseudostateKind entrypoint ;
-	PseudostateKind exitpoint ;
-	StringComparisonOperator _EQUALS ;
-	TransitionKind internal ;
-	TransitionKind local ;
-	TransitionKind external ;
-	IntegerComparisonOperator SMALLER ;
-	IntegerComparisonOperator SMALLER_EQUALS ;
-	IntegerComparisonOperator EQUALS ;
-	IntegerComparisonOperator GREATER_EQUALS ;
-	IntegerComparisonOperator GREATER ;
-	IntegerComparisonOperator NOT_EQUALS ;
-	Annotation dynamic ;
-	Annotation abstract ;
-	Type EByteArray ;
-	Type EFloat ;
-	Type EBoolean ;
-	Type EFeatureMapEntry ;
-	Type EResource ;
-	Type EBooleanObject ;
-	Type EFeatureMap ;
-	Type EJavaClass ;
-	Type EInvocationTargetException ;
-	Type EChar ;
-	Type ELongObject ;
-	Type EInt ;
-	Type EShort ;
-	Type EJavaObject ;
-	Type EBigDecimal ;
-	Type EByte ;
-	Type EString ;
-	Type ETreeIterator ;
-	Type EFloatObject ;
-	Type EDate ;
-	Type EDoubleObject ;
-	Type EIntegerObject ;
-	Type EBigInteger ;
-	Type EByteObject ;
-	Type EShortObject ;
-	Type EEList ;
-	Type ELong ;
-	Type EDiagnosticChain ;
-	Type EResourceSet ;
-	Type EEnumerator ;
-	Type ECharacterObject ;
-	Type EDouble ;
-	Type EMap ;
-Type newType (
-		newMember of type Attribute
+	Annotation abstract;
+	Type SignalEventType extends EventType (
+		signal of type Signal
 	);
+	Type CallEventType extends EventType (
+		operation of type Operation
+	);
+	Type Attribute extends NamedElement ( ) with {
+		abstract;
+	} ;
+	Type BooleanAttribute extends NamedElement, extends Attribute ( );
+	Type IntegerAttribute extends NamedElement, extends Attribute ( );
+	Type StringAttribute extends NamedElement, extends Attribute ( );
+	Type _Constraint ( ) with {
+		abstract;
+	} ;
+	Type BooleanConstraint extends _Constraint (
+		expression of type BooleanExpression with {
+			containment;
+		}
+	) ;
+	Type IntegerConstraint extends _Constraint (
+		expression of type IntegerComparisonExpression with {
+			containment;
+		}
+	) ;
+	Type StringConstraint extends _Constraint (
+		expression of type StringComparisonExpression with {
+			containment;
+		}
+	) ;
+	Type NamedElement (
+		_name of type EString
+	) with {
+		abstract;
+	} ;
+	Type StateMachine extends NamedElement (
+		regions of type Regions with {
+			containment;
+		}
+	) ;
+	Type Region extends NamedElement (
+		vertice of type Vertexs with {
+			containment;
+		},
+		transitions of type Transitions with {
+			containment;
+		} ,
+		stateMachine of type StateMachine ,
+		state of type State ,
+		currentVertex of type Vertex with {
+			dynamic;
+		}
+	) ;
+	Type Vertex extends NamedElement (
+		container of type Region,
+		outgoingTransitions of type Transitions ,
+		incomingTransitions of type Transitions
+	) with {
+		abstract;
+	} ;
+	Type Pseudostate extends NamedElement, extends Vertex (
+		kind of type PseudostateKind ,
+		state of type State
+	);
+	Type State extends NamedElement, extends Vertex (
+		regions of type Regions with {
+			containment;
+		} ,
+		entry of type Behavior with {
+			containment;
+		} ,
+		doActivity of type Behavior with {
+			containment;
+		} ,
+		exit of type Behavior with {
+			containment;
+		} ,
+		deferrableTriggers of type Triggers with {
+			containment;
+		} ,
+		connectionPoint of type Pseudostates with {
+			containment;
+		}
+	) ;
+	Type FinalState extends NamedElement, extends Vertex , extends State ( );
+	Type Transition extends NamedElement (
+		source of type Vertex,
+		target of type Vertex ,
+		_triggers of type Triggers with {
+			containment;
+		} ,
+		container of type Region ,
+		kind of type TransitionKind ,
+		effect of type Behavior with {
+			containment;
+		} ,
+		constraint of type _Constraint with {
+			containment;
+		}
+	) ;
+	Type Trigger extends NamedElement (
+		eventType of type EventType with {
+			containment;
+		}
+	) ;
+	Type Behavior extends NamedElement (
+		emittedSignals of type SignalEventOccurrences with {
+			containment;
+		}
+	) ;
+	Type OperationBehavior extends NamedElement, extends Behavior (
+		attributeValues of type AttributeValues with {
+			containment;
+		}
+	) ;
+	Type AttributeValue ( ) with {
+		dynamic;
+	} ;
+	Annotation dynamic;
+	Type BooleanAttributeValue extends AttributeValue (
+		_attribute of type BooleanAttribute,
+		_value of type EBooleanObject
+	) with {
+		dynamic;
+	} ;
+	Type IntegerAttributeValue extends AttributeValue (
+		_attribute of type IntegerAttribute,
+		_value of type EIntegerObject
+	) with {
+		dynamic;
+	} ;
+	Type StringAttributeValue extends AttributeValue (
+		_attribute of type StringAttribute,
+		_value of type EString
+	) with {
+		dynamic;
+	} ;
+	Type Expression ( ) with {
+		abstract;
+	} ;
+	Type IntegerComparisonExpression extends Expression (
+		operator of type IntegerComparisonOperator,
+		operand1 of type IntegerAttribute ,
+		operand2 of type IntegerAttribute
+	);
+	Type StringComparisonExpression extends Expression (
+		operator of type StringComparisonOperator,
+		operand1 of type StringAttribute ,
+		operand2 of type StringAttribute
+	);
+	Type BooleanExpression extends Expression ( ) with {
+		abstract;
+	} ;
+	Type BooleanBinaryExpression extends Expression, extends BooleanExpression (
+		operator of type BooleanBinaryOperator ,
+		operand1 of type BooleanAttribute ,
+		operand2 of type BooleanAttribute
+	);
+	Type BooleanUnaryExpression extends Expression, extends BooleanExpression (
+		operator of type BooleanUnaryOperator ,
+		operand of type BooleanAttribute
+	);
+	BooleanBinaryOperator AND;
+	BooleanBinaryOperator OR;
+	Type BooleanBinaryOperator;
+	BooleanUnaryOperator TRUE;
+	BooleanUnaryOperator FALSE;
+	Type BooleanUnaryOperator;
+	IntegerComparisonOperator SMALLER;
+	IntegerComparisonOperator SMALLER_EQUALS;
+	IntegerComparisonOperator EQUALS;
+	IntegerComparisonOperator NOT_EQUALS;
+	IntegerComparisonOperator GREATER_EQUALS;
+	IntegerComparisonOperator GREATER;
+	Type IntegerComparisonOperator;
+	StringComparisonOperator EQUALS;
+	StringComparisonOperator NOT_EQUALS;
+	Type StringComparisonOperator;
+	Type EventOccurrence ( ) with {
+		dynamic;
+	} ;
+	Type CompletionEventOccurrence (
+		state of type State
+	) with {
+		dynamic;
+	} ;
+	Type SignalEventOccurrence extends EventOccurrence (
+		signal of type Signal,
+		attributeValues of type AttributeValues with {
+			dynamic;
+		}
+	) with {
+		dynamic ;
+	} ;
+	Type CallEventOccurrence extends EventOccurrence (
+		operation of type Operation,
+		inParameterValues of type AttributeValues with {
+			dynamic;
+		} ,
+		outParameterValues of type AttributeValues with {
+			dynamic;
+		} ,
+		returnValue of type AttributeValue with {
+			dynamic;
+		}
+	) with {
+		dynamic ;
+	} ;
+	PseudostateKind initial;
+	PseudostateKind join;
+	PseudostateKind fork;
+	PseudostateKind _terminate;
+	PseudostateKind entrypoint;
+	PseudostateKind exitpoint;
+	Type PseudostateKind;
+	TransitionKind internal;
+	TransitionKind local;
+	TransitionKind external;
+	Type TransitionKind;
+	Type EObject;
+	Type EBigDecimal;
+	Type EBigInteger;
+	Type EBoolean;
+	Type EBooleanObject;
+	Type EByte;
+	Type EByteArray;
+	Type EByteObject;
+	Type EChar;
+	Type ECharacterObject;
+	Type EDate;
+	Type EDiagnosticChain;
+	Type EDouble;
+	Type EDoubleObject;
+	Type EEList;
+	Type EEnumerator;
+	Type EFeatureMap;
+	Type EFeatureMapEntry;
+	Type EFloat;
+	Type EFloatObject;
+	Type EInt;
+	Type EIntegerObject;
+	Type EJavaClass;
+	Type EJavaObject;
+	Type ELong;
+	Type ELongObject;
+	Type EMap;
+	Type EResource;
+	Type EResourceSet;
+	Type EShort;
+	Type EShortObject;
+	Type EString;
+	Type ETreeIterator;
+	Type EInvocationTargetException;
+	Annotation containment;
+	Collection Triggers of type Trigger;
+	Collection AttributeValues of type AttributeValue;
+	Collection SignalEventOccurrences of type SignalEventOccurrence;
+	Collection Regions of type Region;
+	Collection Pseudostates of type Pseudostate;
+	Collection Transitions of type Transition;
+	Collection Signals of type Signal;
+	Collection Operations of type Operation;
+	Collection Attributes of type Attribute;
+	Collection Vertexs of type Vertex;
 }
