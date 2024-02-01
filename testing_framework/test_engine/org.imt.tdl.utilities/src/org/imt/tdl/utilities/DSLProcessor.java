@@ -173,8 +173,8 @@ public class DSLProcessor {
 	}
 
 	public boolean isConcreteEcoreType(String typeName) {
-		return eClassifiers.stream().filter(c -> c.getName().equals(getValidName(typeName)) && !c.eClass().isAbstract())
-				.count() > 0;
+		return getEClassifiers().stream()
+				.filter(c -> c.getName().equals(getValidName(typeName)) && !c.eClass().isAbstract()).count() > 0;
 	}
 
 	public String getValidName(String name) {
@@ -331,7 +331,7 @@ public class DSLProcessor {
 		return metamodelRootElement;
 	}
 
-	public EList<EClassifier> geteClassifiers() {
+	public EList<EClassifier> getEClassifiers() {
 		if (eClassifiers == null || eClassifiers.isEmpty()) {
 			eClassifiers = new BasicEList<EClassifier>();
 			eClassifiers.addAll(getMetamodelRootElement().getEClassifiers());
