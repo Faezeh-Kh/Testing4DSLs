@@ -5,29 +5,29 @@ Package LinearSearch_testSuite {
 	
 	VariableDeclaration result (_name = "result");
 	SymbolBinding LSResultBinding (symbol = result);
-	BooleanValue resultValue (value = ?);
+	BooleanValue resultValue (_value = ?);
 	
 	Test Description test1 uses configuration LinearSearchConfiguration1{
 		tester.genericGate sends runModel to xminijava.genericGate;
 		tester.genericGate sends getModelState to xminijava.genericGate;
-		xminijava.genericGate sends LSResultBinding (value = resultValue (value = "true")) to tester.genericGate;
+		xminijava.genericGate sends LSResultBinding (_value = resultValue (_value = "true")) to tester.genericGate;
 	}
 	
 	Test Description test2 uses configuration LinearSearchConfiguration2{
 		tester.genericGate sends runModel to xminijava.genericGate;
 		tester.genericGate sends getModelState to xminijava.genericGate;
-		xminijava.genericGate sends LSResultBinding (value = resultValue (value = "true")) to tester.genericGate;
+		xminijava.genericGate sends LSResultBinding (_value = resultValue (_value = "true")) to tester.genericGate;
 	}
 	
 	Test Description test3 uses configuration LinearSearchConfiguration3{
 		tester.genericGate sends runModel to xminijava.genericGate;
 		tester.genericGate sends getModelState to xminijava.genericGate;
-		xminijava.genericGate sends LSResultBinding (value = resultValue (value = "false")) to tester.genericGate;
+		xminijava.genericGate sends LSResultBinding (_value = resultValue (_value = "false")) to tester.genericGate;
 	}
 	
 	Test Description test4 uses configuration LinearSearchConfiguration4{
 		tester.genericGate sends runModel to xminijava.genericGate;
 		tester.genericGate sends getModelState to xminijava.genericGate;
-		xminijava.genericGate sends LSResultBinding (value = resultValue (value = "false")) to tester.genericGate;
+		xminijava.genericGate sends LSResultBinding (_value = resultValue (_value = "false")) to tester.genericGate;
 	}
 }

@@ -1,7 +1,8 @@
 Package testConfiguration {
 	Import all from common ;
-	Import all from xminijavaSpecificEvents ;
-	Gate Type genericGateType accepts modelExecutionCommand ;
+	Import SymbolBinding from miniJavaSpecificTypes;
+	
+	Gate Type genericGateType accepts modelExecutionCommand, SymbolBinding ;
 	Gate Type oclGateType accepts OCL ;
 	Component Type TestSystem having {
 		gate genericGate of type genericGateType ;

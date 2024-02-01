@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewpoint:DAnalysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" uid="_D2fvAFE8EeyKQPtzQXWWHg" version="14.5.1.202106111100">
+<viewpoint:DAnalysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" uid="_D2fvAFE8EeyKQPtzQXWWHg" version="15.2.0.202303281325">
   <semanticResources>generated/common.tdlan2</semanticResources>
-  <semanticResources>generated/xminijavaSpecificEvents.tdlan2</semanticResources>
   <semanticResources>generated/miniJavaSpecificTypes.tdlan2</semanticResources>
   <semanticResources>generated/testConfiguration.tdlan2</semanticResources>
   <semanticResources>testSuite.tdlan2</semanticResources>
@@ -112,4 +111,21 @@
   <semanticResources>gemoc-gen/execution/execution-20220201_123420/BinarySearch_TestSuite.tdlan2</semanticResources>
   <semanticResources>gemoc-gen/execution/execution-20220201_123420/testCoverage.xmi</semanticResources>
   <semanticResources>gemoc-gen/execution/execution-20220201_123420/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_143742/BinarySearch_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143748/BinarySearch_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143748/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_143757/Factorial_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143758/Factorial_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143758/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_143804/LinearSearch_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143806/LinearSearch_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143806/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_143812/Person_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143816/Person_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143816/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_143831/Tree_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143855/Tree_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_143855/testReport.xmi</semanticResources>
+  <semanticResources>gemoc-gen/execution/execution-20240201_145456/Tree_TestSuite.tdlan2</semanticResources>
+  <semanticResources>test-report/execution-20240201_145515/Tree_TestSuite.tdlan2</semanticResources>
 </viewpoint:DAnalysis>
