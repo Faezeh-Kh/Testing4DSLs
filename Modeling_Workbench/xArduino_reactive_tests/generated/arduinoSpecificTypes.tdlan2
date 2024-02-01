@@ -1,174 +1,293 @@
 Package arduinoSpecificTypes {
-	Type Board extends NamedElement ( project of type Project ) with {
-		abstract ;
+	Type Board extends NamedElement (
+		project of type Project
+	) with {
+		abstract;
 	} ;
+	Annotation abstract;
 	Type Module extends NamedElement ( ) with {
+		abstract;
+	} ;
+	Type DigitalPin extends NamedElement, extends Pin (
+		module of type ArduinoDigitalModule with {
+			containment;
+		}
+	) ;
+	Type Pin extends NamedElement (
+		level of type EInt with {
+			dynamic;
+		}
+	) with {
 		abstract ;
 	} ;
-	Type DigitalPin extends Pin ( module of type ArduinoDigitalModule ) ;
-	Type Pin extends NamedElement ( level of type EInt with { dynamic ;
-	} ) with {
-		abstract ;
-	} ;
-	Type AnalogPin extends Pin ( module of type ArduinoAnalogModule ) ;
-	Type Sketch extends NamedElement ( project of type Project , block of type Block , board of type Board ) ;
-	Type Project ( boards of type Board , sketches of type Sketch ) ;
+	Type AnalogPin extends NamedElement, extends Pin (
+		module of type ArduinoAnalogModule with {
+			containment;
+		}
+	) ;
+	Type Sketch extends NamedElement (
+		project of type Project,
+		block of type Block with {
+			containment;
+		} ,
+		board of type Board
+	) ;
+	Type Project (
+		boards of type Boards with {
+			containment;
+		},
+		sketches of type Sketchs with {
+			containment;
+		}
+	) ;
 	Type Instruction ( ) with {
+		abstract;
+	} ;
+	Type ModuleInstruction extends Instruction (
+		module of type Module
+	) with {
+		abstract;
+	} ;
+	Type Control extends Instruction (
+		block of type Block with {
+			containment;
+		}
+	) with {
 		abstract ;
 	} ;
-	Type ModuleAssignment extends Assignment ( ) ;
-	Type ModuleInstruction extends Instruction ( module of type Module ) with {
-		abstract ;
+	Type Utilities extends Instruction ( ) with {
+		abstract;
 	} ;
-	Type Control extends Instruction ( block of type Block ) with {
-		abstract ;
+	Type Delay extends Instruction, extends Utilities (
+		unit of type _Time ,
+		_value of type EInt
+	);
+	Type ModuleAssignment extends Instruction, extends ModuleInstruction , extends Assignment ( );
+	_Time MilliSecond;
+	_Time MicroSecond;
+	Type _Time;
+	Type NamedElement (
+		_name of type EString
+	) with {
+		abstract;
 	} ;
-	Type Utilities ( ) with {
-		abstract ;
-	} ;
-	Type Delay extends Utilities ( unit of type _Time , value of type EInt ) ;
-	Type _Time ;
-	Type NamedElement ( _name of type EString ) with {
-		abstract ;
-	} ;
-	Type Repeat extends Control ( iteration of type EInt ) ;
-	Type ModuleGet extends Expression ( module of type Module ) with {
-		abstract ;
-	} ;
-	Type While extends Control ( condition of type BooleanExpression ) ;
-	Type BinaryExpression extends Expression ( left of type Expression , right of type Expression ) with {
-		abstract ;
-	} ;
-	Type BinaryIntegerOperatorKind ;
-	Type Variable extends NamedElement ( ) with {
-		abstract ;
-	} ;
-	Type VariableAssignment extends Assignment ( _variable of type Variable ) ;
-	Type BinaryIntegerExpression extends IntegerExpression ( operator of type BinaryIntegerOperatorKind ) ;
-	Type BinaryBooleanExpression extends BooleanExpression ( operator of type BinaryBooleanOperatorKind ) ;
+	Type Repeat extends Instruction, extends Control (
+		iteration of type EInt
+	);
+	Type If extends Instruction, extends Control (
+		condition of type BooleanExpression with {
+			containment;
+		} ,
+		elseBlock of type Block with {
+			containment;
+		}
+	) ;
+	Type While extends Instruction, extends Control (
+		condition of type BooleanExpression with {
+			containment;
+		}
+	) ;
 	Type Expression ( ) with {
+		abstract;
+	} ;
+	Type BinaryExpression extends Expression (
+		left of type Expression with {
+			containment;
+		},
+		right of type Expression with {
+			containment;
+		}
+	) with {
 		abstract ;
 	} ;
-	Type Constant ( ) with {
+	Type BooleanExpression extends Expression ( ) with {
+		abstract;
+	} ;
+	Type IntegerExpression extends Expression ( ) with {
+		abstract;
+	} ;
+	Type ModuleGet extends Expression (
+		module of type Module
+	) with {
+		abstract;
+	} ;
+	Type Constant extends Expression ( ) with {
+		abstract;
+	} ;
+	BinaryIntegerOperatorKind minus;
+	BinaryIntegerOperatorKind plus;
+	BinaryIntegerOperatorKind mul;
+	BinaryIntegerOperatorKind div;
+	BinaryIntegerOperatorKind min;
+	BinaryIntegerOperatorKind max;
+	BinaryIntegerOperatorKind pourcent;
+	Type BinaryIntegerOperatorKind;
+	Type Variable extends NamedElement ( ) with {
+		abstract;
+	} ;
+	Type VariableAssignment extends Instruction, extends Assignment (
+		_variable of type Variable
+	);
+	Type BinaryIntegerExpression extends Expression, extends BinaryExpression , extends IntegerExpression (
+		operator of type BinaryIntegerOperatorKind
+	);
+	Type BinaryBooleanExpression extends Expression, extends BinaryExpression , extends BooleanExpression (
+		operator of type BinaryBooleanOperatorKind
+	);
+	Type IntegerConstant extends Expression, extends Constant , extends IntegerExpression (
+		_value of type EInt
+	);
+	Type BooleanConstant extends Expression, extends Constant , extends BooleanExpression (
+		_value of type EBoolean
+	);
+	Type Assignment extends Instruction (
+		operand of type Expression with {
+			containment;
+		}
+	) with {
 		abstract ;
 	} ;
-	Type If extends Control ( condition of type BooleanExpression , elseBlock of type Block ) ;
-	Type IntegerConstant extends IntegerExpression ( value of type EInt ) ;
-	Type BooleanConstant extends BooleanExpression ( value of type EBoolean ) ;
-	Type BooleanExpression ( ) with {
+	Type IntegerVariable extends NamedElement, extends Variable (
+		initialValue of type EInt
+	);
+	Type BooleanVariable extends NamedElement, extends Variable (
+		initialValue of type EBoolean
+	);
+	Type BooleanModuleGet extends Expression, extends ModuleGet , extends BooleanExpression ( );
+	Type IntegerModuleGet extends Expression, extends ModuleGet , extends IntegerExpression ( );
+	BinaryBooleanOperatorKind inf;
+	BinaryBooleanOperatorKind sup;
+	BinaryBooleanOperatorKind infOrEqual;
+	BinaryBooleanOperatorKind supOrEqual;
+	BinaryBooleanOperatorKind equal;
+	BinaryBooleanOperatorKind AND;
+	BinaryBooleanOperatorKind OR;
+	BinaryBooleanOperatorKind Different;
+	Type BinaryBooleanOperatorKind;
+	UnaryIntegerOperatorKind minus;
+	UnaryIntegerOperatorKind squareRoot;
+	Type UnaryIntegerOperatorKind;
+	UnaryBooleanOperatorKind NOT;
+	Type UnaryBooleanOperatorKind;
+	Type UnaryExpression extends Expression (
+		operand of type Expression with {
+			containment;
+		}
+	) with {
 		abstract ;
 	} ;
-	Type IntegerExpression ( ) with {
-		abstract ;
+	Type UnaryBooleanExpression extends Expression, extends UnaryExpression , extends BooleanExpression (
+		operator of type UnaryBooleanOperatorKind
+	);
+	Type UnaryIntegerExpression extends Expression, extends UnaryExpression , extends IntegerExpression (
+		operator of type UnaryIntegerOperatorKind
+	);
+	Type VariableDeclaration extends Instruction (
+		_variable of type Variable with {
+			containment;
+		}
+	) ;
+	Type VariableRef extends Expression ( ) with {
+		abstract;
 	} ;
-	Type Assignment extends Instruction ( operand of type Expression ) with {
-		abstract ;
+	Type IntegerVariableRef extends Expression, extends VariableRef , extends IntegerExpression (
+		_variable of type IntegerVariable
+	);
+	Type ArduinoModule extends NamedElement, extends Module ( ) with {
+		abstract;
 	} ;
-	Type IntegerVariable extends Variable ( initialValue of type EInt ) ;
-	Type BooleanVariable extends Variable ( initialValue of type EBoolean ) ;
-	Type BooleanModuleGet extends BooleanExpression ( ) ;
-	Type IntegerModuleGet extends IntegerExpression ( ) ;
-	Type BinaryBooleanOperatorKind ;
-	Type UnaryIntegerOperatorKind ;
-	Type UnaryBooleanOperatorKind ;
-	Type UnaryExpression extends Expression ( operand of type Expression ) with {
-		abstract ;
+	Type ArduinoDigitalModule extends NamedElement, extends Module , extends ArduinoModule ( ) with {
+		abstract;
 	} ;
-	Type UnaryBooleanExpression extends BooleanExpression ( operator of type UnaryBooleanOperatorKind ) ;
-	Type UnaryIntegerExpression extends IntegerExpression ( operator of type UnaryIntegerOperatorKind ) ;
-	Type VariableDeclaration extends Instruction ( _variable of type Variable ) ;
-	Type VariableRef ( ) with {
-		abstract ;
+	Type ArduinoAnalogModule extends NamedElement, extends Module , extends ArduinoModule ( ) with {
+		abstract;
 	} ;
-	Type IntegerVariableRef extends IntegerExpression ( _variable of type IntegerVariable ) ;
-	Type LED extends ArduinoDigitalModule ( color of type Color ) ;
-	Type PushButton extends ArduinoDigitalModule ( ) ;
-	Type Buzzer extends ArduinoDigitalModule ( ) ;
-	Type RotationSensor extends ArduinoAnalogModule ( ) ;
-	Type MicroServo extends ArduinoDigitalModule ( ) ;
-	Type InfraRedSensor extends ArduinoDigitalModule ( ) ;
-	Type AmbientLightSensor extends ArduinoAnalogModule ( ) ;
-	Type SoundSensor extends ArduinoAnalogModule ( ) ;
-	Type Fan extends ArduinoDigitalModule ( ) ;
-	Type MusicPlayer extends ArduinoAnalogModule ( ) ;
-	Type ArduinoModule extends Module ( ) with {
-		abstract ;
+	Type LED extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule (
+		color of type Color
+	);
+	Type PushButton extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( );
+	Type Buzzer extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( );
+	Type MicroServo extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( );
+	Type InfraRedSensor extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( );
+	Type Fan extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( );
+	Type RotationSensor extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoAnalogModule ( );
+	Type AmbientLightSensor extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoAnalogModule ( );
+	Type SoundSensor extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoAnalogModule ( );
+	Type MusicPlayer extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoAnalogModule ( );
+	Type BluetoothTransceiver extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoAnalogModule (
+		connectedTransceiver of type BluetoothTransceivers
+	);
+	Type WaitFor extends Instruction, extends Utilities (
+		pin of type Pin ,
+		mode of type ChangeType
+	);
+	Type Block (
+		instructions of type Instructions with {
+			containment;
+		}
+	) ;
+	Type ArduinoBoard extends NamedElement, extends Board (
+		digitalPins of type DigitalPins with {
+			containment;
+		} ,
+		analogPins of type AnalogPins with {
+			containment;
+		}
+	) ;
+	Type BooleanVariableRef extends Expression, extends VariableRef , extends BooleanExpression (
+		_variable of type BooleanVariable
+	);
+	Color blue;
+	Color red;
+	Color white;
+	Type Color;
+	Type ArduinoCommunicationModule extends NamedElement, extends Module , extends ArduinoModule , extends ArduinoDigitalModule ( ) with {
+		abstract;
 	} ;
-	Type WaitFor extends Utilities ( pin of type Pin , mode of type ChangeType ) ;
-	Type Block ( instructions of type Instruction ) ;
-	Type ArduinoBoard extends Board ( digitalPins of type DigitalPin , analogPins of type AnalogPin ) ;
-	Type ArduinoDigitalModule extends ArduinoModule ( ) with {
-		abstract ;
-	} ;
-	Type ArduinoAnalogModule extends ArduinoModule ( ) with {
-		abstract ;
-	} ;
-	Type BooleanVariableRef extends BooleanExpression ( _variable of type BooleanVariable ) ;
-	Type Color ;
-	Type ArduinoCommunicationModule extends ArduinoDigitalModule ( ) with {
-		abstract ;
-	} ;
-	Type BluetoothTransceiver extends ArduinoAnalogModule ( connectedTransceiver of type BluetoothTransceiver ) ;
-	Type ChangeType ;
-	UnaryBooleanOperatorKind NOT ;
-	Color blue ;
-	Color red ;
-	Color white ;
-	BinaryBooleanOperatorKind inf ;
-	BinaryBooleanOperatorKind sup ;
-	BinaryBooleanOperatorKind infOrEqual ;
-	BinaryBooleanOperatorKind supOrEqual ;
-	BinaryBooleanOperatorKind equal ;
-	BinaryBooleanOperatorKind AND ;
-	BinaryBooleanOperatorKind OR ;
-	BinaryBooleanOperatorKind Different ;
-	UnaryIntegerOperatorKind _minus ;
-	UnaryIntegerOperatorKind squareRoot ;
-	BinaryIntegerOperatorKind minus ;
-	BinaryIntegerOperatorKind plus ;
-	BinaryIntegerOperatorKind mul ;
-	BinaryIntegerOperatorKind div ;
-	BinaryIntegerOperatorKind min ;
-	BinaryIntegerOperatorKind max ;
-	BinaryIntegerOperatorKind pourcent ;
-	ChangeType RISING ;
-	ChangeType FALLING ;
-	ChangeType CHANGE ;
-	_Time MilliSecond ;
-	_Time MicroSecond ;
-	Annotation dynamic ;
-	Annotation abstract ;
-	Type ELong ;
-	Type EIntegerObject ;
-	Type EByte ;
-	Type EResource ;
-	Type EDate ;
-	Type EByteObject ;
-	Type EChar ;
-	Type EResourceSet ;
-	Type EString ;
-	Type ETreeIterator ;
-	Type EDoubleObject ;
-	Type EFloatObject ;
-	Type EFeatureMap ;
-	Type EJavaClass ;
-	Type EDouble ;
-	Type EInt ;
-	Type EDiagnosticChain ;
-	Type EByteArray ;
-	Type EEList ;
-	Type EBoolean ;
-	Type EShort ;
-	Type EFeatureMapEntry ;
-	Type EBigDecimal ;
-	Type EBooleanObject ;
-	Type EShortObject ;
-	Type ELongObject ;
-	Type EMap ;
-	Type EEnumerator ;
-	Type EBigInteger ;
-	Type ECharacterObject ;
-	Type EInvocationTargetException ;
-	Type EFloat ;
-	Type EJavaObject ;
+	ChangeType RISING;
+	ChangeType FALLING;
+	ChangeType CHANGE;
+	Type ChangeType;
+	Type EObject;
+	Type EBigDecimal;
+	Type EBigInteger;
+	Type EBoolean;
+	Type EBooleanObject;
+	Type EByte;
+	Type EByteArray;
+	Type EByteObject;
+	Type EChar;
+	Type ECharacterObject;
+	Type EDate;
+	Type EDiagnosticChain;
+	Type EDouble;
+	Type EDoubleObject;
+	Type EEList;
+	Type EEnumerator;
+	Type EFeatureMap;
+	Type EFeatureMapEntry;
+	Type EFloat;
+	Type EFloatObject;
+	Type EInt;
+	Type EIntegerObject;
+	Type EJavaClass;
+	Type EJavaObject;
+	Type ELong;
+	Type ELongObject;
+	Type EMap;
+	Type EResource;
+	Type EResourceSet;
+	Type EShort;
+	Type EShortObject;
+	Type EString;
+	Type ETreeIterator;
+	Type EInvocationTargetException;
+	Annotation dynamic;
+	Annotation containment;
+	Collection BluetoothTransceivers of type BluetoothTransceiver;
+	Collection Instructions of type Instruction;
+	Collection Boards of type Board;
+	Collection Sketchs of type Sketch;
+	Collection DigitalPins of type DigitalPin;
+	Collection AnalogPins of type AnalogPin;
 }
