@@ -10,7 +10,11 @@ import org.imt.pssm.reactive.model.statemachines.Attribute
 import org.imt.pssm.reactive.model.statemachines.AttributeValue
 import org.imt.pssm.reactive.model.statemachines.Behavior
 import org.imt.pssm.reactive.model.statemachines.BooleanAttributeValue
+import org.imt.pssm.reactive.model.statemachines.BooleanBinaryExpression
+import org.imt.pssm.reactive.model.statemachines.BooleanBinaryOperator
 import org.imt.pssm.reactive.model.statemachines.BooleanConstraint
+import org.imt.pssm.reactive.model.statemachines.BooleanUnaryExpression
+import org.imt.pssm.reactive.model.statemachines.BooleanUnaryOperator
 import org.imt.pssm.reactive.model.statemachines.CallEventOccurrence
 import org.imt.pssm.reactive.model.statemachines.CallEventType
 import org.imt.pssm.reactive.model.statemachines.CompletionEventOccurrence
@@ -18,6 +22,8 @@ import org.imt.pssm.reactive.model.statemachines.Constraint
 import org.imt.pssm.reactive.model.statemachines.EventOccurrence
 import org.imt.pssm.reactive.model.statemachines.FinalState
 import org.imt.pssm.reactive.model.statemachines.IntegerAttributeValue
+import org.imt.pssm.reactive.model.statemachines.IntegerComparisonExpression
+import org.imt.pssm.reactive.model.statemachines.IntegerComparisonOperator
 import org.imt.pssm.reactive.model.statemachines.IntegerConstraint
 import org.imt.pssm.reactive.model.statemachines.OperationBehavior
 import org.imt.pssm.reactive.model.statemachines.Pseudostate
@@ -29,29 +35,24 @@ import org.imt.pssm.reactive.model.statemachines.State
 import org.imt.pssm.reactive.model.statemachines.StateMachine
 import org.imt.pssm.reactive.model.statemachines.StatemachinesFactory
 import org.imt.pssm.reactive.model.statemachines.StringAttributeValue
+import org.imt.pssm.reactive.model.statemachines.StringComparisonExpression
+import org.imt.pssm.reactive.model.statemachines.StringComparisonOperator
 import org.imt.pssm.reactive.model.statemachines.StringConstraint
 import org.imt.pssm.reactive.model.statemachines.Transition
 import org.imt.pssm.reactive.model.statemachines.Vertex
-import org.imt.pssm.reactive.model.statemachines.BooleanUnaryExpression
-import org.imt.pssm.reactive.model.statemachines.BooleanBinaryExpression
-import org.imt.pssm.reactive.model.statemachines.IntegerComparisonExpression
-import org.imt.pssm.reactive.model.statemachines.StringComparisonExpression
 
 import static extension org.imt.pssm.reactive.interpreter.BehaviorAspect.*
+import static extension org.imt.pssm.reactive.interpreter.BooleanBinaryExpressionAspect.*
+import static extension org.imt.pssm.reactive.interpreter.BooleanUnaryExpressionAspect.*
 import static extension org.imt.pssm.reactive.interpreter.ConstraintAspect.*
+import static extension org.imt.pssm.reactive.interpreter.IntegerComparisonExpressionAspect.*
 import static extension org.imt.pssm.reactive.interpreter.RegionAspect.*
 import static extension org.imt.pssm.reactive.interpreter.StateAspect.*
 import static extension org.imt.pssm.reactive.interpreter.StateMachineAspect.*
+import static extension org.imt.pssm.reactive.interpreter.StringComparisonExpressionAspect.*
 import static extension org.imt.pssm.reactive.interpreter.TransitionAspect.*
 import static extension org.imt.pssm.reactive.interpreter.VertexAspect.*
-import static extension org.imt.pssm.reactive.interpreter.BooleanUnaryExpressionAspect.*
-import static extension org.imt.pssm.reactive.interpreter.BooleanBinaryExpressionAspect.*
-import static extension org.imt.pssm.reactive.interpreter.IntegerComparisonExpressionAspect.*
-import static extension org.imt.pssm.reactive.interpreter.StringComparisonExpressionAspect.*
-import org.imt.pssm.reactive.model.statemachines.BooleanBinaryOperator
-import org.imt.pssm.reactive.model.statemachines.IntegerComparisonOperator
-import org.imt.pssm.reactive.model.statemachines.StringComparisonOperator
-import org.imt.pssm.reactive.model.statemachines.BooleanUnaryOperator
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 @Aspect(className=StateMachine)
 class StateMachineAspect {
@@ -88,7 +89,7 @@ class StateMachineAspect {
 	private def List<Transition> _selectTransitions(Vertex vertex, EventOccurrence event) {
 		val transitions = new ArrayList
 		if (vertex instanceof State) {
-			if (vertex.regions !== null) {
+			if (vertex.regions !== null && !vertex.regions.isEmpty) {
 				transitions.addAll(vertex.regions.map[r|_self._selectTransitions(r.vertice, event)].flatten)
 			}
 		}
@@ -587,13 +588,14 @@ class TransitionAspect {
 				canFire = _self.triggers.exists[t|
 					val type = t.eventType
 					type instanceof SignalEventType &&
-							eventOccurrence.signal == (type as SignalEventType).signal
+						EcoreUtil.equals(eventOccurrence.signal, (type as SignalEventType).signal)
 				]
 			} else if (eventOccurrence instanceof CallEventOccurrence) {
 				canFire = _self.triggers.exists[t|
 					val type = t.eventType
 					type instanceof CallEventType &&
-							eventOccurrence.operation == (type as CallEventType).operation
+					EcoreUtil.equals(eventOccurrence.operation, (type as CallEventType).operation)
+							
 				]
 			}
 		}
