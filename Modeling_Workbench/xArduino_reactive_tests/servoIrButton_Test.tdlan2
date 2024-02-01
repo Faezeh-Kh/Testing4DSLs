@@ -11,49 +11,49 @@ Package testSuite {
 
 	Test Description test1 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = ledPin (level = '1')) to tester.reactiveGate;
 	}
 	Test Description test2 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = ledPin (level = '1')) to tester.reactiveGate;
-		component tester waits for '500';
+		component tester waits for '500' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = ledPin (level = '0')) to tester.reactiveGate;
 	}
 	Test Description test3 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends IRSensor_detected (sensor = IRSensor) to arduino.reactiveGate;
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '0')) to tester.reactiveGate;
 	}
 	Test Description test4 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends IRSensor_detected (sensor = IRSensor) to arduino.reactiveGate;
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '0')) to tester.reactiveGate;
-		component tester waits for '90';
+		component tester waits for '90' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '6')) to tester.reactiveGate;
 	}
 	Test Description test5 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends IRSensor_detected (sensor = IRSensor) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '4000';
+		component tester waits for '4000' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '180')) to tester.reactiveGate;
 	}
 	Test Description test6 uses configuration servoIrbuttonConfiguration{
 		tester.reactiveGate sends button_pressed (button = button) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = ledPin (level = '1')) to tester.reactiveGate;
-		component tester waits for '500';
+		component tester waits for '500' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = ledPin (level = '0')) to tester.reactiveGate;
 
 		tester.reactiveGate sends IRSensor_detected (sensor = IRSensor) to arduino.reactiveGate;
-		component tester waits for '50';
+		component tester waits for '50' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '0')) to tester.reactiveGate;
-		component tester waits for '90';
+		component tester waits for '90' of type ms;
 		arduino.reactiveGate sends Pin_level_changed (pin = servoPin (level = '6')) to tester.reactiveGate;
-		component tester waits for '80';
+		component tester waits for '80' of type ms;
 	}
 }

@@ -15,4 +15,5 @@ Package common {
 	modelExecutionCommand stopModelExecution;
 	modelExecutionCommand resetModel;
 	modelExecutionCommand getModelState;
+	Time ms;
 }

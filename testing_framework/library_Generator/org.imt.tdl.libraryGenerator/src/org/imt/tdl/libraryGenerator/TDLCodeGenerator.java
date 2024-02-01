@@ -44,15 +44,10 @@ public class TDLCodeGenerator {
 			"repeat", "value", "on", "or", "any", "Exception", "contained", "corresponding", "References", "response",
 			"Signature", "variable", "uses", "objectives"));
 
-	private CommonPackageGenerator commonPackageGenerator;
 	private Package commonPackage;
-	private DSLSpecificEventsGenerator dslSpecificEventsGenerator;
 	private Package dslSpecificEventsPackage;
-	private DSLSpecificTypesGenerator dslSpecificTypesGenerator;
 	private Package dslSpecificTypesPackage;
-	private TestConfigurationGenerator testConfigurationGenerator;
 	private Package testConfigurationPackage;
-	private TestSuitePackageGenerator testSuitePackageGenerator;
 	private Package testSuitePackage;
 
 	public TDLCodeGenerator(String dslFilePath, String tdlProjectPath) throws IOException {
@@ -60,26 +55,26 @@ public class TDLCodeGenerator {
 		DSLProcessor dslProcessor = new DSLProcessor(dslPath);
 
 		System.out.println("Start TDL Code generation");
-		dslSpecificTypesGenerator = new DSLSpecificTypesGenerator();
+		DSLSpecificTypesGenerator dslSpecificTypesGenerator = new DSLSpecificTypesGenerator();
 		dslSpecificTypesPackage = dslSpecificTypesGenerator
 				.generateDslSpecificTypes(dslProcessor.getMetamodelRootElement());
 
-		commonPackageGenerator = new CommonPackageGenerator(dslSpecificTypesGenerator);
+		CommonPackageGenerator commonPackageGenerator = new CommonPackageGenerator(dslSpecificTypesGenerator);
 		commonPackage = commonPackageGenerator.generateCommonPackage();
-		;
 
+		DSLSpecificEventsGenerator dslSpecificEventsGenerator = null;
 		if (dslProcessor.dslHasBehavioralInterface()) {
 			dslSpecificEventsGenerator = new DSLSpecificEventsGenerator(dslSpecificTypesGenerator);
 			dslSpecificEventsPackage = dslSpecificEventsGenerator
 					.generateDSLSpecificEventsPackage(dslProcessor.getBehavioralInterfaceRootElement());
 		}
 
-		testConfigurationGenerator = new TestConfigurationGenerator(dslProcessor.getDSLName(), dslProcessor.getDSLID(),
-				commonPackageGenerator, dslSpecificEventsGenerator);
+		TestConfigurationGenerator testConfigurationGenerator = new TestConfigurationGenerator(
+				dslProcessor.getDSLName(), dslProcessor.getDSLID(), commonPackageGenerator, dslSpecificEventsGenerator);
 		testConfigurationPackage = testConfigurationGenerator.generateTestConfigurationPackage();
 
-		testSuitePackageGenerator = new TestSuitePackageGenerator(commonPackage, dslSpecificTypesPackage,
-				dslSpecificEventsPackage, testConfigurationPackage);
+		TestSuitePackageGenerator testSuitePackageGenerator = new TestSuitePackageGenerator(commonPackage,
+				dslSpecificTypesPackage, dslSpecificEventsPackage, testConfigurationPackage);
 		testSuitePackage = testSuitePackageGenerator.generateTestSuitePackage();
 
 		System.out.println("start saving packages");
