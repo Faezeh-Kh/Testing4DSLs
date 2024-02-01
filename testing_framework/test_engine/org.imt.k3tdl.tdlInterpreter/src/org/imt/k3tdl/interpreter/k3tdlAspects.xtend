@@ -87,8 +87,8 @@ class TestDescriptionAspect{
 	
 	@Step
 	def TDLTestCaseResult executeTestCase(){
-		if (!_self.launcher.launcherIsTuned){
-			_self.activateConfiguration()
+		if (!_self.launcher.launcherIsTuned && _self.activateConfiguration()){
+				return _self.runTestAndReturnResult
 		}
 		return _self.runTestAndReturnResult
 	}
@@ -108,26 +108,30 @@ class TestDescriptionAspect{
 	 * then an observer is attached to the model execution engine
 	 * and afterwards, the test case is executed
 	 */
-	def void activateConfiguration(){
+	def boolean activateConfiguration(){
 		if (pathHelper === null){
 			pathHelper = new PathHelper(_self.eContainer as Package)
 		}
-		pathHelper.findModelAndDSLPathOfTestCase(_self)
-		_self.testConfiguration.activateConfiguration(_self.launcher)
+		if (pathHelper.findModelAndDSLPathOfTestCase(_self)){			
+			return _self.testConfiguration.activateConfiguration(_self.launcher)
+		}
+		return false
 	}
 	
-	def void activateConfiguration(String MUTPath){
+	def boolean activateConfiguration(String MUTPath){
 		if (pathHelper === null){
 			pathHelper = new PathHelper(_self.eContainer as Package)
 		}
-		pathHelper.findModelAndDSLPathOfTestCase(_self)
+		if (!pathHelper.findModelAndDSLPathOfTestCase(_self)){			
+			return false
+		}
 		pathHelper.modelUnderTestPath = Paths.get(MUTPath)
 		
 		_self.launcher = new EngineFactory
 		_self.testCaseResult = new TDLTestCaseResult
 		_self.testCaseCoverage = new TDLTestCaseCoverage
 		
-		_self.testConfiguration.activateConfiguration(_self.launcher)
+		return _self.testConfiguration.activateConfiguration(_self.launcher)
 	}
 	
 	def TDLTestCaseResult runTestAndReturnResult(){
@@ -154,13 +158,16 @@ class TestDescriptionAspect{
 @Aspect (className = TestConfiguration)
 class TestConfigurationAspect{
 
-	def void activateConfiguration(EngineFactory launcher){
+	def boolean activateConfiguration(EngineFactory launcher){
 		val dslPath = PackageAspect.pathHelper.DSLPath
+		if (dslPath === null || dslPath.isEmpty)
+			return false
 		PackageAspect.dslProcessor = new DSLProcessor(dslPath)
 		
 		launcher.DSLPath = dslPath
 		launcher.MUTPath = PackageAspect.pathHelper.modelUnderTestPath
 		_self.setUpLauncher(launcher)
+		return true
 	}
 	
 	final static String GENERIC_GATE = "genericGate";
