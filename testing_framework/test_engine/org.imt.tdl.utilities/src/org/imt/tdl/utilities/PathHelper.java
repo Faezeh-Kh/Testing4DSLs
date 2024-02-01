@@ -31,7 +31,6 @@ public class PathHelper {
 
 	Package testSuite;
 
-	Path runtimeWorkspacePath;
 	Path modelsProjectPath;
 	Path modelUnderTestPath;
 	Resource MUTResource;
@@ -64,8 +63,6 @@ public class PathHelper {
 
 	public PathHelper(Path modelUnderTestPath) {
 		this.modelUnderTestPath = modelUnderTestPath;
-		// when the modelUnderTestPath found, find the workspace path
-		findWorkspacePath();
 	}
 
 	public PathHelper() {
@@ -118,8 +115,6 @@ public class PathHelper {
 				String mutpath = removeQuotes(a.getValue());
 				if (modelUnderTestPath == null || !modelUnderTestPath.toString().equals(mutpath)) {
 					modelUnderTestPath = Paths.get(mutpath);
-					// when the modelUnderTestPath is set, find the workspace path
-					findWorkspacePath();
 				}
 			} else if (a.getKey().getName().equals(DSLNAME)) {
 				String dslName = removeQuotes(a.getValue());
@@ -159,13 +154,6 @@ public class PathHelper {
 		return dslProcessor.getDSLPath(DSLName);
 	}
 
-	private void findWorkspacePath() {
-		IProject mutProject = getModelUnderTestProject();
-		String path = mutProject.getLocation().toString();
-		path = path.replace(mutProject.getLocation().lastSegment(), "");
-		runtimeWorkspacePath = Paths.get(path);
-	}
-
 	public Path getWorkspacePath(Path path) {
 		return getWorkspacePath(getProject(path));
 	}
@@ -181,7 +169,7 @@ public class PathHelper {
 	}
 
 	public Path getRuntimeWorkspacePath() {
-		return runtimeWorkspacePath;
+		return ResourcesPlugin.getWorkspace().getRoot().getLocation().toPath();
 	}
 
 	public IProject getProject(Path path) {
@@ -231,8 +219,6 @@ public class PathHelper {
 
 	public void setModelUnderTestPath(Path modelUnderTestPath) {
 		this.modelUnderTestPath = modelUnderTestPath;
-		// when the modelUnderTestPath is set, find the workspace path
-		findWorkspacePath();
 	}
 
 	public Resource getMUTResource() {
